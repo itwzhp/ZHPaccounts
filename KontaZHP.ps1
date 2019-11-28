@@ -49,7 +49,7 @@ Function SendMail($reciepent, $mailbody)
 {
     try
     {
-        Send-MailMessage -To $reciepent -Bcc "admin@lodzka.zhp.pl" -from $mycredsLogin  -Subject 'ZHP - konto Office365' -smtpserver smtp.office365.com -usessl -Credential $mycreds -Encoding UTF8 -Port 587 -BodyAsHtml $mailbody -ErrorAction Stop
+        Send-MailMessage -To $reciepent -from $mycredsLogin  -Subject 'ZHP - konto Office365' -smtpserver smtp.office365.com -usessl -Credential $mycreds -Encoding UTF8 -Port 587 -BodyAsHtml $mailbody -ErrorAction Stop
         Write-host "Udalo się wysłać meila z hasłem na adres $reciepent" -ForegroundColor Green
         pause
     }
