@@ -22,9 +22,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 Param(
     [Parameter(HelpMessage = 'Sciezka do arkusza z danymi uzytkownikow')] [string]$Path,
-    [Parameter(HelpMessage = 'Sciazka do pliku z haslem dla aplikacji do poczty O365')][string]$MailPassFile = "C:\Users\andrz\MailPassword.txt",
+    [Parameter(HelpMessage = 'Sciazka do pliku z haslem dla aplikacji do poczty O365 - jak wygenreowac szczegoly w kodzie')][string]$MailPassFile = "C:\Users\andrz\MailPassword.txt",
     [Parameter(HelpMessage = 'Parsuje wszsytkie rekordy na raz')][switch]$All = $false,
-    [Parameter(HelpMessage = 'Definiuje kto ma byc w polu DoWiadomosci')][string]$KopiaDo = "aktywacja@gdanska.zhp.pl"
+    [Parameter(HelpMessage = 'Definiuje kto ma byc w polu DoWiadomosci')][string]$KopiaDo = "aktywacja@gdanska.zhp.pl",
+    [Parameter(HelpMessage = 'Definiuje kto ma byc nadawca')][string]$Od = "andrzej.zmijewski@zhp.net.pl"
 )
  
 [System.IO.Path]::HasExtension($Path)
@@ -42,28 +43,35 @@ $Encrypted = ConvertFrom-SecureString -SecureString $Secure
 Set-Content -Path $global:mailpassfile  -Value $Encrypted
 #>
 $global:mailpassfile = $MailPassFile
-$global:username = "andrzej.zmijewski@zhp.net.pl"
+$global:username = $Od
 
 $global:file = $Path
 $global:debug = $False
 
 
+
 function GetMailCretentials {
-    #genreted using command:
-    #$Secure = Read-Host -AsSecureString
-    #$Encrypted = ConvertFrom-SecureString -SecureString $Secure
-    #Set-Content -Path $global:mailpassfile  -Value $Encrypted
+    $SecureStringPassword = "";
+    if (-not $global:mailcredentials)
+    {
+        if ([System.IO.File]::Exists($global:mailpassfile )){
+            #genreted using command:
+            #$Secure = Read-Host -AsSecureString
+            #$Encrypted = ConvertFrom-SecureString -SecureString $Secure
+            #Set-Content -Path $global:mailpassfile  -Value $Encrypted
+            $SecureStringPassword = Get-Content -Path $global:mailpassfile  | ConvertTo-SecureString
 
-    $SecureStringPassword = Get-Content -Path $global:mailpassfile  | ConvertTo-SecureString
-
-    $EmailCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $global:username,$SecureStringPassword
-    return  $EmailCredential
-    
+     
+        }else{
+            Write-Host "Podaj haslo do konta $($global.username):"
+            $SecureStringPassword = Read-Host -AsSecureString
+        }
+        $global:mailcredentials = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $global:username,$SecureStringPassword
+    }
+    return  $global:mailcredentials
 }
 
-function SendMailWithPassword ($konto, $haslo){
-    $mailcredentials = GetMailCretentials
-
+function SendMailWithPassword ($konto, $hasloDoWyslania, $mailcredentials){
     $mail = $konto.'Email ZHP'
     $From = $global:username
     $To = $konto.'Pole własne (E-mail address)'
@@ -133,7 +141,7 @@ div.WordSection1
 <p class=MsoNormal style="margin-bottom:0cm;margin-bottom:.0001pt;line-height:normal"><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif">e-mail (i zarazem login): </span>
 <b><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif;color:#0B5394">'+$mail+'</span></b><b><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif"><o:p></o:p></span></b></p>
 <p class=MsoNormal style="margin-bottom:0cm;margin-bottom:.0001pt;line-height:normal"><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif">has&#322;o:</span>
-<b><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif;color:#0B5394"> '+$haslo+'</span></b><b><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif"><o:p></o:p></span></b></p><p class=MsoNormal style="margin-bottom:0cm;margin-bottom:.0001pt;line-height:normal"><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif"><o:p>&nbsp;</o:p></span></p><p class=MsoNormal style="margin-bottom:0cm;margin-bottom:.0001pt;line-height:normal"><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif">Has&#322;o jest wa&#380;ne 90 dni. Zalogowa&#263; si&#281; mo&#380;na na stronie <span class=MsoHyperlink><a href="https://portal.office.com">https://portal.office.com</a></span><o:p></o:p></span></p><p class=MsoNormal style="margin-bottom:0cm;margin-bottom:.0001pt;line-height:normal"><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif"><o:p>&nbsp;</o:p></span></p><p class=MsoNormal style="margin-bottom:0cm;margin-bottom:.0001pt;line-height:normal"><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif"><o:p>&nbsp;</o:p></span></p><p class=MsoNormal style="margin-bottom:0cm;margin-bottom:.0001pt;line-height:normal"><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif">Z harcerskim pozdrowieniem<o:p></o:p></span></p><p class=MsoNormal style="margin-bottom:0cm;margin-bottom:.0001pt;line-height:normal"><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif">Czuwaj<br><br><o:p></o:p></span></p><p style="margin:0cm;margin-bottom:.0001pt;background:white"><b><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif;color:#0B5394;border:none windowtext 1.0pt;padding:0cm;background:white">'+$global:PodpisAdministratora+'&nbsp;</span></b><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif;color:#0B5394;border:none windowtext 1.0pt;padding:0cm;background:white"><br>'+$global:FunkcjaAdministratora+'</span></div></body></html>'
+<b><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif;color:#0B5394"> '+$hasloDoWyslania+'</span></b><b><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif"><o:p></o:p></span></b></p><p class=MsoNormal style="margin-bottom:0cm;margin-bottom:.0001pt;line-height:normal"><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif"><o:p>&nbsp;</o:p></span></p><p class=MsoNormal style="margin-bottom:0cm;margin-bottom:.0001pt;line-height:normal"><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif">Has&#322;o jest wa&#380;ne 90 dni. Zalogowa&#263; si&#281; mo&#380;na na stronie <span class=MsoHyperlink><a href="https://portal.office.com">https://portal.office.com</a></span><o:p></o:p></span></p><p class=MsoNormal style="margin-bottom:0cm;margin-bottom:.0001pt;line-height:normal"><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif"><o:p>&nbsp;</o:p></span></p><p class=MsoNormal style="margin-bottom:0cm;margin-bottom:.0001pt;line-height:normal"><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif"><o:p>&nbsp;</o:p></span></p><p class=MsoNormal style="margin-bottom:0cm;margin-bottom:.0001pt;line-height:normal"><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif">Z harcerskim pozdrowieniem<o:p></o:p></span></p><p class=MsoNormal style="margin-bottom:0cm;margin-bottom:.0001pt;line-height:normal"><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif">Czuwaj<br><br><o:p></o:p></span></p><p style="margin:0cm;margin-bottom:.0001pt;background:white"><b><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif;color:#0B5394;border:none windowtext 1.0pt;padding:0cm;background:white">'+$global:PodpisAdministratora+'&nbsp;</span></b><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif;color:#0B5394;border:none windowtext 1.0pt;padding:0cm;background:white"><br>'+$global:FunkcjaAdministratora+'</span></div></body></html>'
 
 $SMTPServer = "smtp.office365.com"
 $SMTPPort = "587"
@@ -208,12 +216,16 @@ function AskForCommands($commands)
 
 function ZnajdzKontaDlaNazwiska($konto)
 {
-    Get-MsolUser -SearchString $konto.'Pole własne (Surname)' | select FirstName, LastName, Office, SignInName | Sort FirstName
+    Write-Output "Znalazlem:"
+    Get-MsolUser -SearchString "$($konto.'Pole własne (Surname)')" | select FirstName, LastName, Office, SignInName | Sort FirstName | Format-Table
+    Write-Output "####################"
 }
 
-function ZnajdźKontoDlaEmila($konto) {
-        
-    Get-MsolUser -UserPrincipalName $konto."Email ZHP"
+function ZnajdźKontoDlaEmila($konto)
+{
+    Write-Output "Znalazlem:"
+    Get-MsolUser -UserPrincipalName "$($konto.'Email ZHP')" | Format-Table
+    Write-Output "####################"
 }
 
 function ZaproponujInnyAdres($konto)
@@ -231,10 +243,11 @@ function ResetHasla ($konto) {
     $length = 10 ## characters
     $nonAlphaChars = 3
     $password = [System.Web.Security.Membership]::GeneratePassword($length, $nonAlphaChars)
-    Write-Host "Resetuje haslo dla $($konto."Email ZHP"). Nowe haslo: $password"
 
+    $mailcredentials = GetMailCretentials
+    Write-Host "Resetuje haslo dla $($konto."Email ZHP"). Nowe haslo: $password"
     Set-MsolUserPassword -UserPrincipalName $konto."Email ZHP" -NewPassword $password -ForceChangePassword $True
-    SendMailWithPassword $konto $password
+    SendMailWithPassword $konto $password $mailcredentials
 }
 
 function AddLicense ($konto) {
@@ -243,9 +256,10 @@ function AddLicense ($konto) {
 
 
 function StworzKonto ($konto) {
+    $mailcredentials = GetMailCretentials
     Write-Host "Zakladam konto $konto"
-    $uzytokownik = New-MsolUser -UserPrincipalName $konto."Email ZHP" -FirstName $konto.'Pole własne (Name)' -LastName $konto.'Pole własne (Surname)' -DisplayName "$($konto.'Pole własne (Name)') $($konto.'Pole własne (Surname)')" -Office $konto.'Pole własne (Chorągiew)' -Department $konto.'Pole własne (Hufiec)' -LicenseAssignment 'gkzhp:STANDARDWOFFPACK','gkzhp:POWER_BI_STANDARD' -UsageLocation PL
-    SendMailWithPassword $konto $uzytokownik.Password
+    $uzytokownik = New-MsolUser -UserPrincipalName $konto."Email ZHP" -FirstName $konto.'Pole własne (Name)' -LastName $konto.'Pole własne (Surname)' -DisplayName "$($konto.'Pole własne (Name)') $($konto.'Pole własne (Surname)')" -Office "Chorągiew $($konto.'Pole własne (Chorągiew)')" -Department "Hufiec $($konto.'Pole własne (Hufiec)')" -LicenseAssignment 'gkzhp:STANDARDWOFFPACK','gkzhp:POWER_BI_STANDARD' -UsageLocation PL
+    SendMailWithPassword $konto $uzytokownik.Password $mailcredentials
     return $uzytokownik
 }
 
