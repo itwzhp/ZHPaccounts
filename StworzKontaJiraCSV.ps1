@@ -32,7 +32,7 @@ Param(
 
 
 #Zmienne globalne
-$commands="Znajdź konta dla nazwiska","Znajdź konto dla emila","Zaproponuj inny adres","Reset hasła","Stwórz konto","Dodaj Licencje","Wyjdź"
+$commands="Znajdź konta dla imienia i nazwiska","Znajdź konto dla emila","Zaproponuj inny adres","Reset hasła","Stwórz konto","Dodaj Licencje","Wyjdź"
 $global:cc= $KopiaDo
 $global:PodpisAdministratora="phm.&nbsp;Andrzej  &#379;mijewski"  #Polskie znaki: http://hektor.umcs.lublin.pl/~awmarczx/awm/info/pl-codes.htm
 $global:FunkcjaAdministratora="Cz&#322;onek zespo&#322;u ds. informacji&nbsp;Chor&#261;gwi Gda&#324;skiej ZHP"
@@ -209,7 +209,7 @@ function CheckData($konta)
 function AskForCommands($commands)
 {
     #Write-Host "Wybierz komendę: "
-    $commands | foreach {$i = 1} { Write-Host "$i -  $_"; $i++ }
+    $commands | ForEach-Object {$i = 1} { Write-Host "$i -  $_"; $i++ }
     return [int](getKeyResponse "Wybierz komendę ") - 49
     #return $HOST.UI.RawUI.ReadKey().VirtualKeyCode - 49
 }
@@ -217,14 +217,14 @@ function AskForCommands($commands)
 function ZnajdzKontaDlaNazwiska($konto)
 {
     Write-Output "Znalazlem:"
-    Get-MsolUser -SearchString "$($konto.'Pole własne (Surname)')" | select FirstName, LastName, Office, SignInName | Sort FirstName | Format-Table
+    Get-MsolUser -SearchString "$($_.'Pole własne (Name)') $($konto.'Pole własne (Surname)')" | select FirstName, LastName, Department, Office, SignInName | Sort FirstName | Format-Table
     Write-Output "####################"
 }
 
-function ZnajdźKontoDlaEmila($konto)
+function ZnajdźKontoDlaEmila($email)
 {
-    Write-Output "Znalazlem:"
-    Get-MsolUser -UserPrincipalName "$($konto.'Email ZHP')" | Format-Table
+    Write-Output "Email $($email) ma przypisane konto:"
+    Get-MsolUser -UserPrincipalName "$($email)" | select FirstName, LastName, Department, Office, SignInName |  Format-Table
     Write-Output "####################"
 }
 
@@ -235,6 +235,7 @@ function ZaproponujInnyAdres($konto)
     "$($_.'Pole własne (Surname)'.ToLower()).$($_.'Pole własne (Name)'.ToLower())@zhp.net.pl",
     "$($_.'Pole własne (Name)'.ToLower()[0]).$($_.'Pole własne (Surname)'.ToLower())@zhp.net.pl",
     "$($_.'Pole własne (Surname)'.ToLower()).$($_.'Pole własne (Name)'.ToLower()[0])@zhp.net.pl")
+    $emails | ForEach-Object -Process {$a = LatinCharacters $_; ZnajdźKontoDlaEmila $a}
     $email = AskForCommands $emails
     $konto.'Email ZHP' = $emails[$email]
 }
@@ -318,8 +319,8 @@ while(-not $toExit)
         if (-not $runForAll) { $shouldRun = ( AskConfirmation "Czy wykonac komende dla $($_.'Email ZHP')" ) }
         if ($shouldRun)
         {
-            if ($commands[$command] -eq "Znajdź konta dla nazwiska") {ZnajdzKontaDlaNazwiska $_}
-            elseif($commands[$command] -eq "Znajdź konto dla emila") {ZnajdźKontoDlaEmila $_}
+            if ($commands[$command] -eq "Znajdź konta dla imienia i nazwiska") {ZnajdzKontaDlaNazwiska $_}
+            elseif($commands[$command] -eq "Znajdź konto dla emila") {ZnajdźKontoDlaEmila $_.'Email ZHP'}
             elseif($commands[$command] -eq "Zaproponuj inny adres") {ZaproponujInnyAdres $_}
             elseif($commands[$command] -eq "Reset hasła") { ResetHasla $_ }
             elseif($commands[$command] -eq "Stwórz konto") { StworzKonto $_ }
