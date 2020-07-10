@@ -34,8 +34,6 @@ Param(
 #Zmienne globalne
 $commands="Znajdź konta dla imienia i nazwiska","Znajdź konto dla emila","Zaproponuj inny adres","Reset hasła","Stwórz konto","Dodaj Licencje","Wyjdź"
 $global:cc= $KopiaDo
-$global:PodpisAdministratora="phm.&nbsp;Andrzej  &#379;mijewski"  #Polskie znaki: http://hektor.umcs.lublin.pl/~awmarczx/awm/info/pl-codes.htm
-$global:FunkcjaAdministratora="Cz&#322;onek zespo&#322;u ds. informacji&nbsp;Chor&#261;gwi Gda&#324;skiej ZHP"
 
 <#wygenerowany uzywajac komend (trzymaj go w prywatnej przestrzeni i nie udostepniaj):
 $Secure = Read-Host -AsSecureString #Podaj unikalne haslo wygenerowane dla aplikacji w opjach zabezpieczen O365
@@ -73,13 +71,25 @@ function GetMailCretentials {
 
 function SendMailWithPassword ($konto, $hasloDoWyslania, $mailcredentials){
     $mail = $konto.'Email ZHP'
+	$nazwaWyswietlana="$($konto.'Pole własne (Name)') $($konto.'Pole własne (Surname)')"
     $From = $global:username
     $To = $konto.'Pole własne (E-mail address)'
     Write-Host "Wysylam maila do $($To)"
     $Subject = "Dostęp do eZHP"
-    $Body = '<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
-<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns:m="http://schemas.microsoft.com/office/2004/12/omml" xmlns="http://www.w3.org/TR/REC-html40"><head><meta name=Generator content="Microsoft Word 15 (filtered medium)"><style><!--
-/* Font Definitions */
+    
+	
+$Body = @"
+<html>
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+<meta name=Generator content="Microsoft Word 15 (filtered)">
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;}
 @font-face
 	{font-family:"Cambria Math";
 	panose-1:2 4 5 3 5 4 6 3 2 4;}
@@ -87,61 +97,211 @@ function SendMailWithPassword ($konto, $hasloDoWyslania, $mailcredentials){
 	{font-family:Calibri;
 	panose-1:2 15 5 2 2 2 4 3 2 4;}
 @font-face
+	{font-family:"Segoe UI";
+	panose-1:2 11 5 2 4 2 4 2 2 3;}
+@font-face
 	{font-family:"Trebuchet MS";
 	panose-1:2 11 6 3 2 2 2 2 2 4;}
-/* Style Definitions */
-p.MsoNormal, li.MsoNormal, div.MsoNormal
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
 	{margin-top:0cm;
 	margin-right:0cm;
 	margin-bottom:8.0pt;
 	margin-left:0cm;
 	line-height:107%;
 	font-size:11.0pt;
-	font-family:"Calibri",sans-serif;
-	mso-fareast-language:EN-US;}
+	font-family:"Calibri",sans-serif;}
 a:link, span.MsoHyperlink
-	{mso-style-priority:99;
-	color:#0563C1;
+	{color:#0563C1;
 	text-decoration:underline;}
 a:visited, span.MsoHyperlinkFollowed
-	{mso-style-priority:99;
-	color:#954F72;
+	{color:#954F72;
 	text-decoration:underline;}
-p
-	{mso-style-priority:99;
-	mso-margin-top-alt:auto;
+p.MsoAcetate, li.MsoAcetate, div.MsoAcetate
+	{mso-style-link:"Tekst dymka Znak";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:9.0pt;
+	font-family:"Segoe UI",sans-serif;}
+p.MsoListParagraph, li.MsoListParagraph, div.MsoListParagraph
+	{margin-top:0cm;
 	margin-right:0cm;
-	mso-margin-bottom-alt:auto;
-	margin-left:0cm;
-	font-size:12.0pt;
-	font-family:"Times New Roman",serif;
-	mso-fareast-language:PL;}
-.MsoChpDefault
-	{mso-style-type:export-only;
-	font-family:"Calibri",sans-serif;}
-.MsoPapDefault
-	{mso-style-type:export-only;
 	margin-bottom:8.0pt;
+	margin-left:36.0pt;
+	line-height:107%;
+	font-size:11.0pt;
+	font-family:"Calibri",sans-serif;}
+p.MsoListParagraphCxSpFirst, li.MsoListParagraphCxSpFirst, div.MsoListParagraphCxSpFirst
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:36.0pt;
+	margin-bottom:.0001pt;
+	line-height:107%;
+	font-size:11.0pt;
+	font-family:"Calibri",sans-serif;}
+p.MsoListParagraphCxSpMiddle, li.MsoListParagraphCxSpMiddle, div.MsoListParagraphCxSpMiddle
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:36.0pt;
+	margin-bottom:.0001pt;
+	line-height:107%;
+	font-size:11.0pt;
+	font-family:"Calibri",sans-serif;}
+p.MsoListParagraphCxSpLast, li.MsoListParagraphCxSpLast, div.MsoListParagraphCxSpLast
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:8.0pt;
+	margin-left:36.0pt;
+	line-height:107%;
+	font-size:11.0pt;
+	font-family:"Calibri",sans-serif;}
+span.TekstdymkaZnak
+	{mso-style-name:"Tekst dymka Znak";
+	mso-style-link:"Tekst dymka";
+	font-family:"Segoe UI",sans-serif;}
+span.UnresolvedMention
+	{mso-style-name:"Unresolved Mention";
+	color:#605E5C;
+	background:#E1DFDD;}
+.MsoChpDefault
+	{font-family:"Calibri",sans-serif;}
+.MsoPapDefault
+	{margin-bottom:8.0pt;
 	line-height:107%;}
 @page WordSection1
-	{size:595.3pt 841.9pt;
-	margin:70.85pt 70.85pt 70.85pt 70.85pt;}
+	{size:612.0pt 792.0pt;
+	margin:72.0pt 72.0pt 72.0pt 72.0pt;}
 div.WordSection1
 	{page:WordSection1;}
---></style><!--[if gte mso 9]><xml>
-<o:shapedefaults v:ext="edit" spidmax="1026" />
-</xml><![endif]--><!--[if gte mso 9]><xml>
-<o:shapelayout v:ext="edit">
-<o:idmap v:ext="edit" data="1" />
-</o:shapelayout></xml><![endif]--></head>
-<body lang=EN-US link="#0563C1" vlink="#954F72"><div class=WordSection1>
-<p class=MsoNormal style="margin-bottom:0cm;margin-bottom:.0001pt;line-height:normal"><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif">Czuwaj!<o:p></o:p></span></p>
-<p class=MsoNormal style="margin-bottom:0cm;margin-bottom:.0001pt;line-height:normal"><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif"><o:p>&nbsp;</o:p></span></p>
-<p class=MsoNormal style="margin-bottom:0cm;margin-bottom:.0001pt;line-height:normal"><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif">Twoje dane dost&#281;powe do eZHP to:<o:p></o:p></span></p>
-<p class=MsoNormal style="margin-bottom:0cm;margin-bottom:.0001pt;line-height:normal"><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif">e-mail (i zarazem login): </span>
-<b><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif;color:#0B5394">'+$mail+'</span></b><b><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif"><o:p></o:p></span></b></p>
-<p class=MsoNormal style="margin-bottom:0cm;margin-bottom:.0001pt;line-height:normal"><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif">has&#322;o:</span>
-<b><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif;color:#0B5394"> '+$hasloDoWyslania+'</span></b><b><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif"><o:p></o:p></span></b></p><p class=MsoNormal style="margin-bottom:0cm;margin-bottom:.0001pt;line-height:normal"><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif"><o:p>&nbsp;</o:p></span></p><p class=MsoNormal style="margin-bottom:0cm;margin-bottom:.0001pt;line-height:normal"><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif">Has&#322;o jest wa&#380;ne 90 dni. Zalogowa&#263; si&#281; mo&#380;na na stronie <span class=MsoHyperlink><a href="https://portal.office.com">https://portal.office.com</a></span><o:p></o:p></span></p><p class=MsoNormal style="margin-bottom:0cm;margin-bottom:.0001pt;line-height:normal"><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif"><o:p>&nbsp;</o:p></span></p><p class=MsoNormal style="margin-bottom:0cm;margin-bottom:.0001pt;line-height:normal"><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif"><o:p>&nbsp;</o:p></span></p><p class=MsoNormal style="margin-bottom:0cm;margin-bottom:.0001pt;line-height:normal"><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif">Z harcerskim pozdrowieniem<o:p></o:p></span></p><p class=MsoNormal style="margin-bottom:0cm;margin-bottom:.0001pt;line-height:normal"><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif">Czuwaj<br><br><o:p></o:p></span></p><p style="margin:0cm;margin-bottom:.0001pt;background:white"><b><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif;color:#0B5394;border:none windowtext 1.0pt;padding:0cm;background:white">'+$global:PodpisAdministratora+'&nbsp;</span></b><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif;color:#0B5394;border:none windowtext 1.0pt;padding:0cm;background:white"><br>'+$global:FunkcjaAdministratora+'</span></div></body></html>'
+ /* List Definitions */
+ ol
+	{margin-bottom:0cm;}
+ul
+	{margin-bottom:0cm;}
+-->
+</style>
+
+</head>
+
+<body lang=PL link="#0563C1" vlink="#954F72">
+
+<div class=WordSection1>
+
+<p class=MsoNormal style='margin-bottom:6.0pt'><span style='font-size:10.5pt;
+line-height:107%;font-family:"Trebuchet MS",sans-serif'>Druhno/Druhu,</span></p>
+
+<p class=MsoNormal style='margin-bottom:6.0pt;line-height:normal'><span
+style='font-size:10.5pt;font-family:"Trebuchet MS",sans-serif'>w&#322;a&#347;nie
+za&#322;o&#380;yli&#347;my dla Ciebie konto ZHP. Mo&#380;esz si&#281; do niego
+zalogowa&#263; przez stron&#281; <span class=MsoHyperlink><a
+href="https://www.office.com">https://www.office.com</a></span> lub <span
+class=MsoHyperlink><a href="https://poczta.zhp.pl.&nbsp;">https://poczta.zhp.pl.&nbsp;</a></span></span></p>
+
+<p class=MsoNormal><span style='font-size:10.5pt;line-height:107%;font-family:
+"Trebuchet MS",sans-serif'>&nbsp;</span></p>
+
+<p class=MsoNormal><span style='font-size:10.5pt;line-height:107%;font-family:
+"Trebuchet MS",sans-serif'>Szczegó&#322;y u&#380;ytkownika</span><span
+lang=EN-US><br>
+</span><span style='font-size:10.5pt;line-height:107%;font-family:"Trebuchet MS",sans-serif'> Nazwa
+wy&#347;wietlana: </span><b><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif;color:#0B5394">$nazwaWyswietlana</span></b><br>
+<span style='font-size:10.5pt;line-height:107%;font-family:"Trebuchet MS",sans-serif'> Nazwa
+u&#380;ytkownika: </span><b><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif;color:#0B5394">$mail</span></b><br>
+<span style='font-size:10.5pt;line-height:107%;font-family:"Trebuchet MS",sans-serif'> Has&#322;o:</span><b><span lang=PL style="font-size:10.0pt;font-family:"Trebuchet MS",sans-serif;color:#0B5394"> $hasloDoWyslania</span></b></p>
+
+<p class=MsoNormal style='margin-bottom:6.0pt;line-height:normal'><span
+style='font-size:10.5pt;font-family:"Trebuchet MS",sans-serif'>&nbsp;</span></p>
+
+<p class=MsoNormal style='margin-bottom:6.0pt;line-height:normal'><span
+style='font-size:10.5pt;font-family:"Trebuchet MS",sans-serif'>Od teraz masz
+dost&#281;p do aplikacji takich jak Outlook, Teams, Word, Excel, Forms i
+innych. S&#261; one dost&#281;pne w wersji Online przez przegl&#261;dark&#281;.</span></p>
+
+<p class=MsoNormal style='margin-bottom:6.0pt;line-height:normal'><span
+style='font-size:10.5pt;font-family:"Trebuchet MS",sans-serif'>W celach
+bezpiecze&#324;stwa mo&#380;e by&#263; wymagana dwuetapowa weryfikacja. Oznacza
+to, &#380;e do zalogowania potrzebne b&#281;dzie dodatkowe potwierdzenie
+to&#380;samo&#347;ci poprzez prywatny numer telefonu, adres e-mail lub
+aplikacj&#281; na telefon. Koniecznie uzupe&#322;nij wymagane dane podczas
+pierwszego logowania!</span></p>
+
+<p class=MsoNormal style='margin-bottom:6.0pt;line-height:normal'><span
+style='font-size:10.5pt;font-family:"Trebuchet MS",sans-serif'>Je&#347;li w
+przysz&#322;o&#347;ci zapomnisz has&#322;a spróbuj w pierwszej kolejno&#347;ci
+samodzielnie odzyska&#263; has&#322;o, przez opcj&#281; 'Nie mo&#380;esz
+uzyska&#263; dost&#281;pu do konta?', która dost&#281;pna jest na stronie
+logowania.</span></p>
+
+<p class=MsoNormal style='margin-bottom:6.0pt;line-height:normal'><span
+style='font-size:10.5pt;font-family:"Trebuchet MS",sans-serif'>Zostawi&#281;
+te&#380; kilka przydatnych linków, dzi&#281;ki którym &#322;atwiej b&#281;dzie
+Ci si&#281; odnale&#378;&#263; w naszej organizacji.</span></p>
+
+<p class=MsoListParagraphCxSpFirst style='margin-bottom:6.0pt;text-indent:-18.0pt;
+line-height:normal'><span style='font-size:10.5pt;font-family:Symbol'>·<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span class=MsoHyperlink><span style='font-size:10.5pt;
+font-family:"Trebuchet MS",sans-serif'><a href="https://intranet.zhp.pl">https://intranet.zhp.pl</a></span></span><span
+style='font-size:10.5pt;font-family:"Trebuchet MS",sans-serif'> – harcerski intranet,
+czyli wewn&#281;trzna witryna z aktualno&#347;ciami, dokumentami i innymi
+materia&#322;ami dla harcerskiej kadry,</span></p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-bottom:6.0pt;text-indent:
+-18.0pt;line-height:normal'><span style='font-size:10.5pt;font-family:Symbol'>·<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span class=MsoHyperlink><span style='font-size:10.5pt;
+font-family:"Trebuchet MS",sans-serif'><a href="https://tipi.zhp.pl">https://tipi.zhp.pl</a></span></span><span
+style='font-size:10.5pt;font-family:"Trebuchet MS",sans-serif'> – system ewidencji
+naszej organizacji - je&#347;li chcia&#322;by&#347; mie&#263; tam dost&#281;p
+zg&#322;o&#347; si&#281; do swojego dru&#380;ynowego lub administratora
+chor&#261;gwi,</span></p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-bottom:6.0pt;text-indent:
+-18.0pt;line-height:normal'><span style='font-size:10.5pt;font-family:Symbol'>·<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span class=MsoHyperlink><span style='font-size:10.5pt;
+font-family:"Trebuchet MS",sans-serif'><a href="https://pomoc.zhp.pl">https://pomoc.zhp.pl</a></span></span><span
+style='font-size:10.5pt;font-family:"Trebuchet MS",sans-serif'> – strona, na
+której mo&#380;esz znale&#378;&#263; przydatne artyku&#322;y pomocy w razie
+problemów podczas pracy z wewn&#281;trznymi systemami jak Microsoft 365, TiPi
+itp.</span></p>
+
+<p class=MsoListParagraphCxSpLast style='margin-bottom:6.0pt;text-indent:-18.0pt;
+line-height:normal'><span style='font-size:10.5pt;font-family:Symbol'>·<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span class=MsoHyperlink><span style='font-size:10.5pt;
+font-family:"Trebuchet MS",sans-serif'><a href="https://helpdesk.zhp.pl">https://helpdesk.zhp.pl</a></span></span><span
+style='font-size:10.5pt;font-family:"Trebuchet MS",sans-serif'> – serwis do
+zg&#322;aszania problemów i pyta&#324; dotycz&#261;cych harcerskiego IT.&nbsp;</span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:6.0pt;
+margin-left:18.0pt;line-height:normal'><span style='font-size:10.5pt;
+font-family:"Trebuchet MS",sans-serif'>&nbsp;</span></p>
+
+<p class=MsoNormal><span style='font-size:10.5pt;line-height:107%;font-family:
+"Trebuchet MS",sans-serif'>Szkolenia z narz&#281;dzi pakietu Office365
+mo&#380;na znale&#378;&#263; tutaj:</span><span lang=EN-US><br>
+</span><span lang=EN-US style='font-size:10.5pt;line-height:107%;font-family:
+"Trebuchet MS",sans-serif'> </span><span class=MsoHyperlink><span
+style='font-size:10.5pt;line-height:107%;font-family:"Trebuchet MS",sans-serif'>https://support.office.com/pl-pl/office-training-center</span></span></p>
+
+<p class=MsoNormal style='margin-bottom:6.0pt;line-height:normal'><span
+style='font-size:10.5pt;font-family:"Trebuchet MS",sans-serif'>Udanego
+korzystania </span><span lang=EN-US style='font-size:10.5pt;font-family:"Trebuchet MS",sans-serif'>&#128578;</span><span
+lang=EN-US><br>
+</span><span style='font-size:10.5pt;font-family:"Trebuchet MS",sans-serif'>Czuwaj!</span><span
+lang=EN-US><br>
+<br>
+</span></p>
+
+</div>
+
+</body>
+
+</html>
+"@
 
 $SMTPServer = "smtp.office365.com"
 $SMTPPort = "587"
@@ -235,7 +395,7 @@ function ZaproponujInnyAdres($konto)
     "$($_.'Pole własne (Surname)'.ToLower()).$($_.'Pole własne (Name)'.ToLower())@zhp.net.pl",
     "$($_.'Pole własne (Name)'.ToLower()[0]).$($_.'Pole własne (Surname)'.ToLower())@zhp.net.pl",
     "$($_.'Pole własne (Surname)'.ToLower()).$($_.'Pole własne (Name)'.ToLower()[0])@zhp.net.pl")
-    $emails | ForEach-Object -Process {$a = LatinCharacters $_; ZnajdźKontoDlaEmila $a}
+	$emails | ForEach-Object -Process {$a = LatinCharacters $_; ZnajdźKontoDlaEmila $a}
     $email = AskForCommands $emails
     $konto.'Email ZHP' = $emails[$email]
 }
@@ -269,6 +429,17 @@ function TrimValues($konto)
     $konto.PSObject.Properties | ForEach-Object { $konto.($_.Name) = $konto.($_.Name).trim()}
 }
 
+function sendTestMail {
+    $mailcredentials = GetMailCretentials
+    $konto=@{'Email ZHP' = "andrzej.zmijewski@zhp.net.pl";
+            'Pole własne (Name)' = "Andrzej";
+            'Pole własne (Surname)'="zMIJEWSKI";
+            'Pole własne (E-mail address)'="andrzej.zmijewski@zhp.net.pl"}
+
+    SendMailWithPassword $konto haslo123 $mailcredentials
+    throw "Exit"
+}
+
 ##################################################
 
 $currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
@@ -282,9 +453,9 @@ $global:isAdmin = $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInR
 Import-Module MsOnline
 Connect-MsolService #-Credential $credentials
 
-
 $konta = LoadData  
 CheckData $konta
+
 
 if ($konta.Length -eq 0)
 {
