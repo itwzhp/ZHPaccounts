@@ -16,7 +16,7 @@ namespace Zhp.Office.AccountManagement
         [FunctionName("CreateAccounts")]
         public async Task Run([TimerTrigger("0 17 3 * * *",RunOnStartup = true)]TimerInfo myTimer, ILogger log, CancellationToken token)
         {
-            //var result = await client.Issues.GetIssuesFromJqlAsync(new IssueSearchOptions("project = O365 AND status = Open AND type = Activation AND summary ~ aktywacja")
+            //var result = await client.Issues.GetIssuesFromJqlAsync(new IssueSearchOptions("")
             //{
                 
             //}, token);

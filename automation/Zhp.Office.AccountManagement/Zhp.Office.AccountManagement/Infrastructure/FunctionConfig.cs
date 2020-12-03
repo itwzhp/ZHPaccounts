@@ -9,10 +9,15 @@ namespace Zhp.Office.AccountManagement.Infrastructure
         internal class JiraConfig
         {
             public string JiraUri { get; private set; } = string.Empty;
+
             public string ConsumerKey { get; private set; } = string.Empty;
             public string ConsumerSecret { get; private set; } = string.Empty;
             public string OAuthAccessToken { get; private set; } = string.Empty;
             public string OAuthTokenSecret { get; private set; } = string.Empty;
+
+            public string ActivationTicketsQuery { get; private set; } = string.Empty;
+
+            public int? JiraQueryBatchSize { get; private set; }
         }
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using Zhp.Office.AccountManagement.TicketSystem;
 
 namespace Zhp.Office.AccountManagement.Infrastructure
 {
@@ -14,6 +15,7 @@ namespace Zhp.Office.AccountManagement.Infrastructure
             
             s.AddSingleton(CreateJiraClient);
             s.AddSingleton(LoadConfig);
+            s.AddTransient<ITicketRepository, JiraTicketRepository>();
         }
 
         public override void ConfigureAppConfiguration(IFunctionsConfigurationBuilder builder)
