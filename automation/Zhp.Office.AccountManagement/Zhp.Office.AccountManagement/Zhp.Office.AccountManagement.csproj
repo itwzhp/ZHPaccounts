@@ -2,31 +2,23 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AzureFunctionsVersion>v3</AzureFunctionsVersion>
-	<Nullable>enable</Nullable>
     <UserSecretsId>c30a6998-6579-48ef-96bb-d97f196f9591</UserSecretsId>
   </PropertyGroup>
 	
-  <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-  </PropertyGroup>
-	
   <ItemGroup>
-    <PackageReference Include="Atlassian.SDK" Version="12.2.0" />
+    <PackageReference Include="Atlassian.SDK" Version="12.3.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.1.10" />
+    <PackageReference Include="Microsoft.Graph" Version="3.21.0" />
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.11" />
+  </ItemGroup>
+	
+  <ItemGroup>
+    <ProjectReference Include="..\Zhp.Office.AccountManagement.Domain\Zhp.Office.AccountManagement.Domain.csproj" />
   </ItemGroup>
 	  
   <ItemGroup>
-    <None Update="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="host.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="local.settings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </None>
+    <None Update="*.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="local.settings.json" CopyToPublishDirectory="Never" />
   </ItemGroup>
 </Project>
