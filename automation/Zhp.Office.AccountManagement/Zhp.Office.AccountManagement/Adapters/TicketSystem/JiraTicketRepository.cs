@@ -48,25 +48,13 @@ namespace Zhp.Office.AccountManagement.Adapters.TicketSystem
         public async Task Test()
         {
             // todo it works from Open state, but not from Approved :(
-            var issue = await jiraClient.Issues.GetIssueAsync("MS365-4671");
+            var issue = await jiraClient.Issues.GetIssueAsync("MS365-4722");
             issue.Resolution = "Done";
             await issue.WorkflowTransitionAsync("11"
 
                 , new WorkflowTransitionUpdates
                 {
-                    Comment = @"Gratulujemy konta!
-Lista
-- a
-- b
-- c
-
-ListaHtml
-<ul>
-<li>a</li>
-<li>1</li>
-<li>i</li>
-</ul>
-"
+                    Comment = @"Gratulujemy konta!"
                 }
                 );
 

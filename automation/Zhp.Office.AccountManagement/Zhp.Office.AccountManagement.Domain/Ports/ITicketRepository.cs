@@ -9,7 +9,9 @@ namespace Zhp.Office.AccountManagement.Domain.Ports
     {
         Task<IReadOnlyCollection<ActivationRequest>> GetApprovedActivationRequests(CancellationToken token);
 
-        Task MarkAsDone(string id);
+        Task MarkAsDone(string id, string? comment, CancellationToken token);
+
+        Task MarkForManualReview(string id, string? comment, CancellationToken token);
 
         Task Test();
     }

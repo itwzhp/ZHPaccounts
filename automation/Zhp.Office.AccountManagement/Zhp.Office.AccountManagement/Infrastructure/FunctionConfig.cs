@@ -1,6 +1,6 @@
 ﻿namespace Zhp.Office.AccountManagement.Infrastructure
 {
-    internal class FunctionConfig
+    public class FunctionConfig
     {
 #if DEBUG
         public const bool IsDebugBuild = true;
@@ -9,7 +9,7 @@
 #endif
         public JiraConfig Jira { get; private set; } = new JiraConfig();
         
-        internal class JiraConfig
+        public class JiraConfig
         {
             public string JiraUri { get; private set; } = string.Empty;
 
@@ -20,7 +20,7 @@
 
             public QueriesType Queries { get; private set; } = new QueriesType();
 
-            internal class QueriesType
+            public class QueriesType
             {
                 public string ApprovedActivationsTicket { get; private set; } = string.Empty;
             }

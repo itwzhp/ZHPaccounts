@@ -36,6 +36,8 @@ namespace Zhp.Office.AccountManagement.Adapters.ActiveDirectory
             };
 
             await this.client.Users.Request().AddAsync(user);
+
+            return false;
         }
     }
 }

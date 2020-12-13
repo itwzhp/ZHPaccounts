@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Threading;
@@ -12,11 +14,22 @@ namespace Zhp.Office.AccountManagement.Domain.Services
     {
         private readonly IAccountManager accountManager;
         private readonly ITicketRepository ticketRepository;
+        private readonly ILogger<AccountsCreatingService> logger;
+        private readonly IPasswordGenerator passwordGenerator;
+        private readonly IMailAddressGenerator mailAddressGenerator;
 
-        public AccountsCreatingService(IAccountManager accountManager, ITicketRepository ticketRepository)
-        {
+        public AccountsCreatingService(
+            IAccountManager accountManager,
+            ITicketRepository ticketRepository,
+            ILogger<AccountsCreatingService> logger,
+            IPasswordGenerator passwordGenerator,
+            IMailAddressGenerator mailAddressGenerator)
+        { 
             this.accountManager = accountManager;
             this.ticketRepository = ticketRepository;
+            this.logger = logger;
+            this.passwordGenerator = passwordGenerator;
+            this.mailAddressGenerator = mailAddressGenerator;
         }
 
         public async Task CreateAccounts(CancellationToken token)
@@ -27,41 +40,30 @@ namespace Zhp.Office.AccountManagement.Domain.Services
             await Task.WhenAll(tickets.Select(t => HandleTicket(t, token)).ToList());
         }
 
-        private async Task<(MailAddress mail, string password)> HandleTicket(ActivationRequest ticket, CancellationToken token)
+        private async Task HandleTicket(ActivationRequest ticket, CancellationToken token)
         {
             try
             {
-                var possibleMails = GetPossibleMails(ticket.FirstName, ticket.LastName);
-                var password = "aaa";
+                var possibleMails = mailAddressGenerator.GetPossibleAddressesForUser(ticket.FirstName, ticket.LastName);
+                var password = passwordGenerator.GeneratePassword();
 
-                var addedMailAddress = await possibleMails.ToAsyncEnumerable().FirstOrDefaultAwaitAsync(
-                    mail => accountManager.TryAddUser(ticket, mail, password, token),
-                    token);
+                var addedMailAddress = await possibleMails.ToAsyncEnumerable()
+                    .FirstOrDefaultAwaitAsync(
+                        mail => accountManager.TryAddUser(ticket, mail, password, token),
+                        token);
 
-                return (addedMailAddress, password);
+                if (addedMailAddress == null)
+                    throw new Exception("Unknown error, unable to create user");
+
+                var comment = $"login: {addedMailAddress}\nhasło: {password}";
+                await ticketRepository.MarkAsDone(ticket.Id, comment, token);
             }
-            catch
+            catch (Exception ex)
             {
-                //mark failed
+                logger.LogError(ex, $"Unable to create account for {ticket.Id}");
+
+                await ticketRepository.MarkForManualReview(ticket.Id, ex.Message, token);
             }
-            return (null, null);
         }
-
-        private static IEnumerable<MailAddress> GetPossibleMails(string firstName, string lastName)
-        {
-            firstName = Clean(firstName);
-            lastName = Clean(lastName);
-
-            yield return new MailAddress($"{firstName}.{lastName}@zhp.net.pl");
-            yield return new MailAddress($"{lastName}.{firstName}@zhp.net.pl");
-            yield return new MailAddress($"{firstName[0]}.{lastName}@zhp.net.pl");
-            for (int i = 1; i <= 99; i++)
-                yield return new MailAddress($"{firstName}.{lastName}{i}@zhp.net.pl");
-        }
-
-        private static string Clean(string text)
-            => text
-                .ToLowerInvariant()
-                .Replace(" ", string.Empty);
     }
 }
