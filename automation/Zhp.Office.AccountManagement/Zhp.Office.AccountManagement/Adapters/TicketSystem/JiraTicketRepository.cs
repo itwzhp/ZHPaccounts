@@ -1,4 +1,5 @@
 ﻿using Atlassian.Jira;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -12,12 +13,16 @@ namespace Zhp.Office.AccountManagement.Adapters.TicketSystem
     internal class JiraTicketRepository : ITicketRepository
     {
         private readonly Jira jiraClient;
+        private readonly ILogger<JiraTicketRepository> log;
+        private bool enableChanges;
         private readonly FunctionConfig.JiraConfig jiraConfig;
 
-        public JiraTicketRepository(Jira jiraClient, FunctionConfig config)
+        public JiraTicketRepository(Jira jiraClient, FunctionConfig config, ILogger<JiraTicketRepository> log)
         {
             this.jiraClient = jiraClient;
+            this.log = log;
             this.jiraConfig = config.Jira;
+            this.enableChanges = config.EnableChanges;
         }
 
         public async Task<IReadOnlyCollection<ActivationRequest>> GetApprovedActivationRequests(CancellationToken token)
@@ -30,8 +35,13 @@ namespace Zhp.Office.AccountManagement.Adapters.TicketSystem
             return new ActivationRequest[0];
         }
 
-        public async Task MarkAsDone(IEnumerable<string> ids)
+        public async Task MarkAsDone(string id)
         {
+            if(!enableChanges)
+            {
+                log.LogInformation($"Jira sandbox mode: marking as done: {id}");
+                return;
+            }
         }
 
 

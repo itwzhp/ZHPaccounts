@@ -25,5 +25,7 @@
                 public string ApprovedActivationsTicket { get; private set; } = string.Empty;
             }
         }
+
+        public bool EnableChanges { get; private set; }
     }
 }

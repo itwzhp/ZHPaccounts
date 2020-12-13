@@ -9,7 +9,7 @@ namespace Zhp.Office.AccountManagement.Domain.Ports
     {
         Task<IReadOnlyCollection<ActivationRequest>> GetApprovedActivationRequests(CancellationToken token);
 
-        Task MarkAsDone(IEnumerable<string> ids);
+        Task MarkAsDone(string id);
 
         Task Test();
     }

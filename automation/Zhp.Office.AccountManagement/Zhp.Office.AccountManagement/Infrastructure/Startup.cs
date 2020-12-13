@@ -2,6 +2,9 @@
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Graph;
+using Microsoft.Graph.Auth;
+using Microsoft.Identity.Client;
 using System;
 using System.Security.Cryptography;
 using Zhp.Office.AccountManagement.Adapters.TicketSystem;
@@ -23,7 +26,7 @@ namespace Zhp.Office.AccountManagement.Infrastructure
             s.AddSingleton(CreateJiraClient);
             s.AddTransient<ITicketRepository, JiraTicketRepository>();
 
-            //s.AddSingleton(CreateGraphClient);
+            s.AddSingleton(CreateGraphClient);
 
             s.AddSingleton(LoadConfig);
 
@@ -31,10 +34,31 @@ namespace Zhp.Office.AccountManagement.Infrastructure
             s.AddSingleton(s => RandomNumberGenerator.Create());
         }
 
-        //private IGraphServiceClient CreateGraphClient(IServiceProvider c)
-        //{
-        //    //return new GraphServiceClient(new DelegateAuthenticationProvider());
-        //}
+        private IGraphServiceClient CreateGraphClient(IServiceProvider c)
+        {
+            IAuthenticationProvider provider;
+
+            if (isDevelopmentEnvironment)
+            {
+                IPublicClientApplication publicClientApplication = PublicClientApplicationBuilder
+                    .Create("TODO")
+                    .Build();
+
+                provider = new InteractiveAuthenticationProvider(publicClientApplication);
+            }
+            else
+            {
+                IConfidentialClientApplication confidentialClientApplication = ConfidentialClientApplicationBuilder
+                    .Create("TODO")
+                    .WithTenantId("TODO")
+                    .WithClientSecret("TODO")
+                    .Build();
+
+                provider = new ClientCredentialProvider(confidentialClientApplication);
+            }
+
+            return new GraphServiceClient(provider);
+        }
 
         public override void ConfigureAppConfiguration(IFunctionsConfigurationBuilder builder)
         {
