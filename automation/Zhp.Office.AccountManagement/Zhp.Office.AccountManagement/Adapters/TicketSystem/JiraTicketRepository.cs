@@ -14,8 +14,8 @@ namespace Zhp.Office.AccountManagement.Adapters.TicketSystem
     {
         private readonly Jira jiraClient;
         private readonly ILogger<JiraTicketRepository> log;
-        private bool enableChanges;
-        private readonly FunctionConfig.JiraConfig jiraConfig;
+        private readonly bool enableChanges;
+        private readonly JiraConfig jiraConfig;
 
         public JiraTicketRepository(Jira jiraClient, FunctionConfig config, ILogger<JiraTicketRepository> log)
         {
@@ -32,32 +32,56 @@ namespace Zhp.Office.AccountManagement.Adapters.TicketSystem
                 MaxIssuesPerRequest = jiraConfig.JiraQueryBatchSize
             }, token);
 
-            return new ActivationRequest[0];
+            return firstQuery.Select(Map).OfType<ActivationRequest>().ToList();
         }
 
-        public async Task MarkAsDone(string id)
+        public static ActivationRequest? Map(Issue issue)
         {
-            if(!enableChanges)
+            Dictionary<string, string?> customFields = issue.CustomFields.ToDictionary(f => f.Name, f => f.Values?.FirstOrDefault());
+            bool isAnyFieldMissing = false;
+
+            string FindValue(string label)
             {
-                log.LogInformation($"Jira sandbox mode: marking as done: {id}");
+                if (customFields.TryGetValue(label, out var value) && value != null)
+                    return value;
+
+                isAnyFieldMissing = true;
+                return string.Empty;
+            }
+
+            var request = new ActivationRequest
+            {
+                Id = issue.Key.Value,
+                FirstName = FindValue("Name"),
+                LastName = FindValue("Surname"),
+                MembershipNumber = FindValue("Member ID (reporter)"),
+                FirstLevelUnit = FindValue("Hufiec"), //TODO Add "Hufiec"
+                SecondLevelUnit = FindValue("Chorągiew"), //TODO Add "Chorągiew"
+            };
+
+            return isAnyFieldMissing ? null : request;
+        }
+
+        public async Task MarkAsDone(string id, string? comment, CancellationToken token)
+            => await RunWorkflow(id, "11", comment, token); //todo extract workflow to config
+
+        public async Task MarkForManualReview(string id, string? comment, CancellationToken token)
+            => await RunWorkflow(id, "31", comment, token); //todo extract workflow to config
+
+        private async Task RunWorkflow(string issueId, string workflowId, string? comment, CancellationToken token)
+        {
+            // todo cache issues
+            var issue = await jiraClient.Issues.GetIssueAsync(issueId);
+            if (!enableChanges)
+            {
+                log.LogInformation($"Jira sandbox mode: running workflow {workflowId} on issue {issueId}");
                 return;
             }
-        }
 
-
-        public async Task Test()
-        {
-            // todo it works from Open state, but not from Approved :(
-            var issue = await jiraClient.Issues.GetIssueAsync("MS365-4722");
-            issue.Resolution = "Done";
-            await issue.WorkflowTransitionAsync("11"
-
-                , new WorkflowTransitionUpdates
-                {
-                    Comment = @"Gratulujemy konta!"
-                }
-                );
-
+            await issue.WorkflowTransitionAsync(workflowId, new WorkflowTransitionUpdates
+            {
+                Comment = comment
+            }, token);
         }
     }
 }

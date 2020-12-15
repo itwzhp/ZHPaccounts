@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Diacritics.Extensions;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Mail;
 
 namespace Zhp.Office.AccountManagement.Domain.Services
@@ -23,8 +25,11 @@ namespace Zhp.Office.AccountManagement.Domain.Services
         }
 
         private static string Clean(string text)
-            => text
+            => string.Join(string.Empty,
+                text
                 .ToLowerInvariant()
-                .Replace(" ", string.Empty);
+                .Replace(" ", string.Empty)
+                .RemoveDiacritics()
+                .Where(c => char.IsLetter(c) || c == '-'));
     }
 }

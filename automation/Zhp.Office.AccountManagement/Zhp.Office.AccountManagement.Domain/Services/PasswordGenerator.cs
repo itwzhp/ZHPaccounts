@@ -56,17 +56,16 @@ namespace Zhp.Office.AccountManagement.Domain.Services
                 else
                     password.Append(punctuations[randomValue - 62]);
             }
-
             var random = new Random();
 
             if (!hasDigit)
-                password.Insert(random.Next(password.Length), '0' + random.Next(10));
+                password.Insert(random.Next(password.Length), (char)('0' + random.Next(10)));
 
             if (!hasLowerCase)
-                password.Insert(random.Next(password.Length), 'a' + random.Next(26));
+                password.Insert(random.Next(password.Length), (char)('a' + random.Next(26)));
 
             if (!hasUpperCase)
-                password.Insert(random.Next(password.Length), 'A' + random.Next(26));
+                password.Insert(random.Next(password.Length), (char)('A' + random.Next(26)));
 
             return password.ToString();
         }

@@ -42,8 +42,10 @@ namespace Zhp.Office.AccountManagement.Tests.Domain.Services
         [Theory]
         [InlineData(" Jan  ", " KOWALSKI  ", "jan.kowalski@zhp.net.pl")]
         [InlineData( "Jan", "Kowalski-Nowak","jan.kowalski-nowak@zhp.net.pl")]
-        [InlineData( "John", "von Neuman","john.von-neuman@zhp.net.pl")]
+        [InlineData( "John", "von Neuman","john.vonneuman@zhp.net.pl")]
         [InlineData( "Grażyna", "Ąężćńłśó", "grazyna.aezcnlso@zhp.net.pl")]
+        [InlineData("Danuta", "Hübner", "danuta.hubner@zhp.net.pl")]
+        [InlineData("Renée", "O’Connor", "renee.oconnor@zhp.net.pl")]
         public void GetPossibleAddressesForUser_ValidAddresses(string firstName, string lastName, string expectedMail)
         {
             var adresses = subject.GetPossibleAddressesForUser(firstName, lastName).ToList();

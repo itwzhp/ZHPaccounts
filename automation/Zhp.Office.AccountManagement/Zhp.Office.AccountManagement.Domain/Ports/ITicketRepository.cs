@@ -12,7 +12,5 @@ namespace Zhp.Office.AccountManagement.Domain.Ports
         Task MarkAsDone(string id, string? comment, CancellationToken token);
 
         Task MarkForManualReview(string id, string? comment, CancellationToken token);
-
-        Task Test();
     }
 }

@@ -34,12 +34,15 @@ namespace Zhp.Office.AccountManagement.Tests.Domain.Services
         public void PasswordShouldHave3Of4CharGroups(int runNumber)
         {
             var basicGroups = new[] { UnicodeCategory.LowercaseLetter, UnicodeCategory.UppercaseLetter, UnicodeCategory.DecimalDigitNumber };
-            var charGroups = subject.GeneratePassword().Select(c => char.GetUnicodeCategory(c)).Distinct().ToList();
+
+            var password = subject.GeneratePassword();
+
+            var charGroups = password.Select(c => char.GetUnicodeCategory(c)).Distinct().ToList();
 
             var foundGroups = basicGroups.Count(g => charGroups.Contains(g))
                             + (charGroups.Any(g => !basicGroups.Contains(g) && g != char.GetUnicodeCategory(' ')) ? 1 : 0);
 
-            foundGroups.Should().BeGreaterOrEqualTo(3);
+            foundGroups.Should().BeGreaterOrEqualTo(3, $"Password {password} is too simple");
         }
 
         [Theory, Repeat(200)]

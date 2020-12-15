@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net.Mail;
 using System.Threading;
 using System.Threading.Tasks;
 using Zhp.Office.AccountManagement.Domain.Ports;
@@ -34,8 +32,12 @@ namespace Zhp.Office.AccountManagement.Domain.Services
 
         public async Task CreateAccounts(CancellationToken token)
         {
+            // todo call multiple times to get all? Or use paging
             var tickets = await ticketRepository.GetApprovedActivationRequests(token);
+
             token.ThrowIfCancellationRequested();
+
+            //todo remove dupplicates
 
             await Task.WhenAll(tickets.Select(t => HandleTicket(t, token)).ToList());
         }
@@ -55,6 +57,7 @@ namespace Zhp.Office.AccountManagement.Domain.Services
                 if (addedMailAddress == null)
                     throw new Exception("Unknown error, unable to create user");
 
+                // TODO better comments
                 var comment = $"login: {addedMailAddress}\nhasło: {password}";
                 await ticketRepository.MarkAsDone(ticket.Id, comment, token);
             }
