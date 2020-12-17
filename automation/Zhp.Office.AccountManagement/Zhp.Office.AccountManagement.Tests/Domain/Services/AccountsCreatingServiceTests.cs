@@ -3,6 +3,7 @@ using FluentAssertions;
 using NSubstitute;
 using NSubstitute.Core;
 using System;
+using System.Linq;
 using System.Net.Mail;
 using System.Threading;
 using System.Threading.Tasks;
@@ -120,7 +121,23 @@ namespace Zhp.Office.AccountManagement.Tests.Domain.Services
         [Fact]
         public async Task DupplicateEntries_UniqueAccountsCreated_AllTicketsClosedOrMarkedForManualReview()
         {
-            Assert.True(false, "TODO");
+            ticketRepository.GetApprovedActivationRequests(default)
+                .ReturnsForAnyArgs(testRequests.Append(
+                    new ActivationRequest
+                    {
+                        Id = "555",
+                        FirstName = "Tomasz",
+                        LastName = "Nowak",
+                        FirstLevelUnit = "Hufiec Sopot",
+                        SecondLevelUnit = "Chorągiew Gdańska",
+                        MembershipNumber = "AL123456789"
+                    }).ToList());
+
+            await subject.CreateAccounts(CancellationToken.None);
+
+            await accountManager.ReceivedWithAnyArgs(2).TryAddUser(null!, null!, null!, default);
+            await ticketRepository.Received().MarkForManualReview("555", Arg.Is<string>(s => s.ToLower().Contains("duplikat")), Arg.Any<CancellationToken>());
+            await ticketRepository.ReceivedWithAnyArgs(2).MarkAsDone(null!, null!, default);
         }
     }
 }

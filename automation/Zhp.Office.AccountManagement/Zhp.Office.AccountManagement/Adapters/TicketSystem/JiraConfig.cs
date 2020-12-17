@@ -9,11 +9,20 @@
 
         public int? JiraQueryBatchSize { get; private set; }
 
-        public QueriesType Queries { get; private set; } = new QueriesType();
+        public QueriesType Queries { get; } = new QueriesType();
+
+        public WorkflowsType Workflows { get; } = new WorkflowsType();
 
         public class QueriesType
         {
             public string ApprovedActivationsTicket { get; private set; } = string.Empty;
+        }
+
+        public class WorkflowsType
+        {
+            public int MarkAsDone { get; private set; }
+
+            public int MarkForManualReview { get; private set; }
         }
     }
 }

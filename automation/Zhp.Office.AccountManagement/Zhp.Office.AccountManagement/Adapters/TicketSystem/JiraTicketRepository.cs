@@ -63,15 +63,15 @@ namespace Zhp.Office.AccountManagement.Adapters.TicketSystem
         }
 
         public async Task MarkAsDone(string id, string? comment, CancellationToken token)
-            => await RunWorkflow(id, "11", comment, token); //todo extract workflow to config
+            => await RunWorkflow(id, jiraConfig.Workflows.MarkAsDone.ToString(), comment, token);
 
         public async Task MarkForManualReview(string id, string? comment, CancellationToken token)
-            => await RunWorkflow(id, "31", comment, token); //todo extract workflow to config
+            => await RunWorkflow(id, jiraConfig.Workflows.MarkForManualReview.ToString(), comment, token);
 
         private async Task RunWorkflow(string issueId, string workflowId, string? comment, CancellationToken token)
         {
             // todo cache issues
-            var issue = await jiraClient.Issues.GetIssueAsync(issueId);
+            var issue = await jiraClient.Issues.GetIssueAsync(issueId, token);
             if (!enableChanges)
             {
                 log.LogInformation($"Jira sandbox mode: running workflow {workflowId} on issue {issueId}");

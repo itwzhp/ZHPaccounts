@@ -28,6 +28,8 @@ namespace Zhp.Office.AccountManagement.Adapters.ActiveDirectory
 
         public async ValueTask<bool> TryAddUser(ActivationRequest request, MailAddress email, string password, CancellationToken token)
         {
+            token.ThrowIfCancellationRequested();
+
             var existingUser = await client.Users.Request()
                 .Select(nameof(User.UserPrincipalName))
                 .Filter($"{nameof(User.UserPrincipalName)} eq '{email}'")
@@ -66,8 +68,10 @@ namespace Zhp.Office.AccountManagement.Adapters.ActiveDirectory
 
             var licenses = new[] { new AssignedLicense { SkuId = new Guid(activeDirectoryConfig.DefaultLicenseSku) } };
 
-            user = await client.Users.Request().AddAsync(user, token);
-            await client.Users[user.Id].AssignLicense(licenses, Enumerable.Empty<Guid>()).Request().PostAsync(token);
+            token.ThrowIfCancellationRequested();
+
+            user = await client.Users.Request().AddAsync(user);
+            await client.Users[user.Id].AssignLicense(licenses, Enumerable.Empty<Guid>()).Request().PostAsync();
             return true;
         }
     }
