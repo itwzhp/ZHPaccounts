@@ -73,7 +73,7 @@ namespace Zhp.Office.AccountManagement.Tests.Domain.Services
         public async Task SimpleCase_AllAccountsCreated_AllTicketsClosed()
         {
             ticketRepository.GetApprovedActivationRequests(default)
-                .ReturnsForAnyArgs(testRequests);
+                .ReturnsForAnyArgs(testRequests, new ActivationRequest[0]);
 
             await subject.CreateAccounts(CancellationToken.None);
 
@@ -88,7 +88,7 @@ namespace Zhp.Office.AccountManagement.Tests.Domain.Services
         public async Task FirstMailAlreadyTaken_AccountsCreated_AllTicketsClosed()
         {
             ticketRepository.GetApprovedActivationRequests(default)
-                .ReturnsForAnyArgs(testRequests);
+                .ReturnsForAnyArgs(testRequests, new ActivationRequest[0]);
             accountManager.TryAddUser(Arg.Any<ActivationRequest>(), new MailAddress("test@example.com"), Arg.Any<string>(), Arg.Any<CancellationToken>())
                 .Returns(false);
 
@@ -105,7 +105,7 @@ namespace Zhp.Office.AccountManagement.Tests.Domain.Services
         public async Task CreatingFailsWithException_AllTicketsMarkedForManualReview()
         {
             ticketRepository.GetApprovedActivationRequests(default)
-                .ReturnsForAnyArgs(testRequests);
+                .ReturnsForAnyArgs(testRequests, new ActivationRequest[0]);
             accountManager.TryAddUser(null!, null!, null!, default)
                 .ReturnsForAnyArgs((Func<CallInfo, bool>)(x => throw new Exception("Some message")));
 
@@ -131,7 +131,7 @@ namespace Zhp.Office.AccountManagement.Tests.Domain.Services
                         FirstLevelUnit = "Hufiec Sopot",
                         SecondLevelUnit = "Chorągiew Gdańska",
                         MembershipNumber = "AL123456789"
-                    }).ToList());
+                    }).ToList(), new ActivationRequest[0]);
 
             await subject.CreateAccounts(CancellationToken.None);
 

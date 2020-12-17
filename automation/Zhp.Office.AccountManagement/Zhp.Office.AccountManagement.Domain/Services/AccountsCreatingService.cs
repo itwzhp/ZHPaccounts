@@ -42,10 +42,23 @@ namespace Zhp.Office.AccountManagement.Domain.Services
 
                 token.ThrowIfCancellationRequested();
 
-                //todo remove dupplicates
+                var (validTickets, duplicates) = FindDuplicates(tickets);
 
-                await Task.WhenAll(tickets.Select(t => HandleTicket(t, token)).ToList());
+                var tasks = validTickets.Select(t => HandleTicket(t, token))
+                    .Concat(duplicates.Select(t => HandleDuplicate(t, token)));
+
+                await Task.WhenAll(tasks.ToList());
             } while (tickets.Any());
+        }
+
+        private (IReadOnlyCollection<ActivationRequest> valid, IReadOnlyCollection<ActivationRequest> duplicates) FindDuplicates(IReadOnlyCollection<ActivationRequest> tickets)
+        {
+            var validTickets = tickets.GroupBy(t => t.MembershipNumber).Select(g => g.First()).ToList();
+            var validTicketIds = validTickets.Select(t => t.Id).ToHashSet();
+
+            var duplicates = tickets.Where(t => !validTicketIds.Contains(t.Id)).ToList();
+
+            return (validTickets, duplicates);
         }
 
         private async Task HandleTicket(ActivationRequest ticket, CancellationToken token)
@@ -74,5 +87,8 @@ namespace Zhp.Office.AccountManagement.Domain.Services
                 await ticketRepository.MarkForManualReview(ticket.Id, ex.Message);
             }
         }
+
+        private async Task HandleDuplicate(ActivationRequest ticket, CancellationToken token)
+           => await ticketRepository.MarkForManualReview(ticket.Id, "Prawdopodobnie duplikat innego zgłoszenia", token);
     }
 }

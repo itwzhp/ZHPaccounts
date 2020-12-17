@@ -7,7 +7,7 @@
         public string User { get; private set; } = string.Empty;
         public string Password { get; private set; } = string.Empty;
 
-        public int? JiraQueryBatchSize { get; private set; }
+        public int JiraQueryBatchSize { get; private set; } = 20;
 
         public QueriesType Queries { get; } = new QueriesType();
 

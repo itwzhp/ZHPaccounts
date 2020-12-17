@@ -1,5 +1,6 @@
 ﻿using Atlassian.Jira;
 using Microsoft.Extensions.Logging;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -12,6 +13,7 @@ namespace Zhp.Office.AccountManagement.Adapters.TicketSystem
 {
     internal class JiraTicketRepository : ITicketRepository
     {
+        private static readonly ConcurrentDictionary<string, Issue> cache = new ConcurrentDictionary<string, Issue>();
         private readonly Jira jiraClient;
         private readonly ILogger<JiraTicketRepository> log;
         private readonly bool enableChanges;
@@ -27,12 +29,14 @@ namespace Zhp.Office.AccountManagement.Adapters.TicketSystem
 
         public async Task<IReadOnlyCollection<ActivationRequest>> GetApprovedActivationRequests(CancellationToken token)
         {
-            var firstQuery = await jiraClient.Issues.GetIssuesFromJqlAsync(new IssueSearchOptions(jiraConfig.Queries.ApprovedActivationsTicket)
+            var results = (await jiraClient.Issues.GetIssuesFromJqlAsync(new IssueSearchOptions(jiraConfig.Queries.ApprovedActivationsTicket)
             {
                 MaxIssuesPerRequest = jiraConfig.JiraQueryBatchSize
-            }, token);
+            }, token)).ToList();
 
-            return firstQuery.Select(Map).OfType<ActivationRequest>().ToList();
+            results.ForEach(r => cache.TryAdd(r.Key.Value, r));
+
+            return results.Select(Map).OfType<ActivationRequest>().ToList();
         }
 
         public static ActivationRequest? Map(Issue issue)
@@ -70,8 +74,10 @@ namespace Zhp.Office.AccountManagement.Adapters.TicketSystem
 
         private async Task RunWorkflow(string issueId, string workflowId, string? comment, CancellationToken token)
         {
-            // todo cache issues
-            var issue = await jiraClient.Issues.GetIssueAsync(issueId, token);
+            var issue = cache.TryGetValue(issueId, out var item)
+                ? item
+                : await jiraClient.Issues.GetIssueAsync(issueId, token);
+
             if (!enableChanges)
             {
                 log.LogInformation($"Jira sandbox mode: running workflow {workflowId} on issue {issueId}");
@@ -82,6 +88,8 @@ namespace Zhp.Office.AccountManagement.Adapters.TicketSystem
             {
                 Comment = comment
             }, token);
+
+            cache.Remove(issueId, out _);
         }
     }
 }
