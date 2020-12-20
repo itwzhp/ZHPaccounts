@@ -1,5 +1,5 @@
 ﻿# Automatyzacja zakładania kont ZHP
-Aplikacja Azure Functions automatyzująca wykonanie zadań związanych z Microsoft365 - zakładanie kont, resety haseł itp..
+Aplikacja Azure Functions automatyzująca wykonanie zadań związanych z Microsoft365 jak zakładanie kont i resety haseł.
 ## Opis
 Obecnie apliacja zawiera następujące funkcje:
 - `CreateAccounts` - pobiera listę ticketów w stanie _Accepted_, zakłada dla nich konta i je zamyka

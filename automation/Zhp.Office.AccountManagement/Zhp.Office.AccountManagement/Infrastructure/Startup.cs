@@ -35,6 +35,7 @@ namespace Zhp.Office.AccountManagement.Infrastructure
             s.AddSingleton(LoadConfig);
 
             s.AddTransient<IPasswordGenerator, PasswordGenerator>();
+            s.AddTransient<ICommentFormatter, CommentFormatter>();
             s.AddTransient<IMailAddressGenerator, MailAddressGenerator>();
             s.AddTransient<AccountsCreatingService>();
             s.AddSingleton(s => RandomNumberGenerator.Create());

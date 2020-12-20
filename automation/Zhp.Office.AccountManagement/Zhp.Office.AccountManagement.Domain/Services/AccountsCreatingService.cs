@@ -16,19 +16,22 @@ namespace Zhp.Office.AccountManagement.Domain.Services
         private readonly ILogger<AccountsCreatingService> logger;
         private readonly IPasswordGenerator passwordGenerator;
         private readonly IMailAddressGenerator mailAddressGenerator;
+        private readonly ICommentFormatter commentFormatter;
 
         public AccountsCreatingService(
             IAccountManager accountManager,
             ITicketRepository ticketRepository,
             ILogger<AccountsCreatingService> logger,
             IPasswordGenerator passwordGenerator,
-            IMailAddressGenerator mailAddressGenerator)
+            IMailAddressGenerator mailAddressGenerator,
+            ICommentFormatter commentFormatter)
         { 
             this.accountManager = accountManager;
             this.ticketRepository = ticketRepository;
             this.logger = logger;
             this.passwordGenerator = passwordGenerator;
             this.mailAddressGenerator = mailAddressGenerator;
+            this.commentFormatter = commentFormatter;
         }
 
         public async Task CreateAccounts(CancellationToken token)
@@ -75,8 +78,7 @@ namespace Zhp.Office.AccountManagement.Domain.Services
                 if (addedMailAddress == null)
                     throw new Exception("Unknown error, unable to create user");
 
-                // TODO better comments
-                var comment = $"login: {addedMailAddress}\nhasło: {password}";
+                var comment = commentFormatter.GetMailCreatedComment(addedMailAddress, password);
                 await ticketRepository.MarkAsDone(ticket.Id, comment);
             }
             catch (OperationCanceledException) when (token.IsCancellationRequested) { }

@@ -50,6 +50,8 @@ namespace Zhp.Office.AccountManagement.Tests.Domain.Services
         public AccountsCreatingServiceTests(ITestOutputHelper outputHelper)
         {
             logger = outputHelper.BuildLoggerFor<AccountsCreatingService>();
+            var commentFormatter = Substitute.For<ICommentFormatter>();
+            commentFormatter.GetMailCreatedComment(null!, null!).Returns("SomeComment");
             passwordGenerator.GeneratePassword().Returns("czuwaj!.8");
             mailAddressGenerator.GetPossibleAddressesForUser(null!, null!)
                 .ReturnsForAnyArgs(new[]
@@ -66,7 +68,8 @@ namespace Zhp.Office.AccountManagement.Tests.Domain.Services
                 ticketRepository,
                 logger,
                 passwordGenerator,
-                mailAddressGenerator);
+                mailAddressGenerator,
+                commentFormatter);
         }
 
         [Fact]

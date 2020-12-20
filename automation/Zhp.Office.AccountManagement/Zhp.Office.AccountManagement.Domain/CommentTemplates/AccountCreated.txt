@@ -1,0 +1,22 @@
+﻿Druhno/Druhu, 
+właśnie założyliśmy dla Ciebie konto ZHP. Możesz się do niego zalogować przez stronę https://www.office.com lub https://poczta.zhp.pl. 
+
+Szczegóły użytkownika:
+Nazwa użytkownika: {login}
+Hasło: {password}
+
+Od teraz masz dostęp do aplikacji takich jak Outlook, Teams, Word, Excel, Forms i innych. Są one dostępne w wersji Online przez przeglądarkę. 
+W celach bezpieczeństwa może być wymagana dwuetapowa weryfikacja. Oznacza to, że do zalogowania potrzebne będzie dodatkowe potwierdzenie tożsamości poprzez prywatny numer telefonu, adres e-mail lub aplikację na telefon. Koniecznie uzupełnij wymagane dane podczas pierwszego logowania! 
+Jeśli w przyszłości zapomnisz hasła spróbuj w pierwszej kolejności samodzielnie odzyskać hasło, przez opcję 'Nie możesz uzyskać dostępu do konta?', która dostępna jest na stronie logowania. 
+Zostawię też kilka przydatnych linków, dzięki którym łatwiej będzie Ci się odnaleźć w naszej organizacji:
+
+- https://e.zhp.pl  – harcerski intranet, czyli wewnętrzna witryna z aktualnościami, dokumentami i innymi materiałami dla harcerskiej kadry, 
+- https://tipi.zhp.pl – system ewidencji naszej organizacji - jeśli chciałbyś mieć tam dostęp zgłoś się do swojego drużynowego lub administratora chorągwi, 
+- https://pomoc.zhp.pl – strona, na której możesz znaleźć przydatne artykuły pomocy w razie problemów podczas pracy z wewnętrznymi systemami jak Microsoft 365, Tipi itp. 
+- https://helpdesk.zhp.pl – serwis do zgłaszania problemów i pytań dotyczących harcerskiego IT.  
+ 
+Szkolenia z narzędzi pakietu Office365 można znaleźć tutaj: 
+https://support.office.com/pl-pl/office-training-center 
+
+Udanego korzystania 🙂 
+Czuwaj!
