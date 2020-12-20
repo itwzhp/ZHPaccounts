@@ -8,6 +8,7 @@ using Microsoft.Graph.Auth;
 using Microsoft.Identity.Client;
 using System;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using Zhp.Office.AccountManagement.Adapters.ActiveDirectory;
 using Zhp.Office.AccountManagement.Adapters.TicketSystem;
 using Zhp.Office.AccountManagement.Domain.Ports;
@@ -50,7 +51,7 @@ namespace Zhp.Office.AccountManagement.Infrastructure
                 void log(Microsoft.Identity.Client.LogLevel level, string message, bool containsPii)
                     => logger.LogDebug(message);
 
-                IPublicClientApplication publicClientApplication = PublicClientApplicationBuilder
+                var publicClientApplication = PublicClientApplicationBuilder
                     .Create(config.DevClientId)
                     .WithAuthority(AzureCloudInstance.AzurePublic, config.TenantId)
                     .WithRedirectUri("http://localhost:1234")
@@ -61,11 +62,10 @@ namespace Zhp.Office.AccountManagement.Infrastructure
             }
             else
             {
-                // todo
-                IConfidentialClientApplication confidentialClientApplication = ConfidentialClientApplicationBuilder
+                var confidentialClientApplication = ConfidentialClientApplicationBuilder
                     .Create(config.ProdClientId)
-                    .WithTenantId("TODO")
-                    .WithClientSecret("TODO")
+                    .WithTenantId(config.TenantId)
+                    .WithCertificate(new X509Certificate2(config.ProdCertificate, config.ProdCertPassword))
                     .Build();
 
                 provider = new ClientCredentialProvider(confidentialClientApplication);

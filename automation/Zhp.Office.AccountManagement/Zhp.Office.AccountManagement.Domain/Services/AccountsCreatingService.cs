@@ -48,7 +48,7 @@ namespace Zhp.Office.AccountManagement.Domain.Services
                     .Concat(duplicates.Select(t => HandleDuplicate(t, token)));
 
                 await Task.WhenAll(tasks.ToList());
-            } while (tickets.Any());
+            } while (tickets.Any()); //todo infinite loop in dev - fix
         }
 
         private (IReadOnlyCollection<ActivationRequest> valid, IReadOnlyCollection<ActivationRequest> duplicates) FindDuplicates(IReadOnlyCollection<ActivationRequest> tickets)
