@@ -18,8 +18,7 @@ namespace Zhp.Office.AccountManagement.Functions
         }
 
         [FunctionName("CreateAccounts")]
-#warning Do not publish with RunOnStartup
-        public async Task Run([TimerTrigger("0 17 3 * * *", RunOnStartup = true)]TimerInfo myTimer, CancellationToken token)
+        public async Task Run([TimerTrigger("0 17 3 * * *", RunOnStartup = false)]TimerInfo myTimer, CancellationToken token)
         {
             log.LogInformation("Running function CreateAccounts...");
             await service.CreateAccounts(token);
