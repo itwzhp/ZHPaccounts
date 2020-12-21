@@ -19,6 +19,8 @@ namespace Zhp.Office.AccountManagement.Adapters.TicketSystem
         private readonly bool enableChanges;
         private readonly JiraConfig jiraConfig;
 
+        private bool wereSomeRequestsAlreadyReturned = false;
+
         public JiraTicketRepository(Jira jiraClient, FunctionConfig config, ILogger<JiraTicketRepository> log)
         {
             this.jiraClient = jiraClient;
@@ -29,6 +31,10 @@ namespace Zhp.Office.AccountManagement.Adapters.TicketSystem
 
         public async Task<IReadOnlyCollection<ActivationRequest>> GetApprovedActivationRequests(CancellationToken token)
         {
+            // if we are in debug mode, don't return the same data on subsequent calls
+            if (!enableChanges && wereSomeRequestsAlreadyReturned)
+                return new ActivationRequest[0];
+
             var results = (await jiraClient.Issues.GetIssuesFromJqlAsync(new IssueSearchOptions(jiraConfig.Queries.ApprovedActivationsTicket)
             {
                 MaxIssuesPerRequest = jiraConfig.JiraQueryBatchSize
@@ -36,6 +42,7 @@ namespace Zhp.Office.AccountManagement.Adapters.TicketSystem
 
             results.ForEach(r => cache.TryAdd(r.Key.Value, r));
 
+            wereSomeRequestsAlreadyReturned = true;
             return results.Select(Map).OfType<ActivationRequest>().ToList();
         }
 
@@ -59,8 +66,8 @@ namespace Zhp.Office.AccountManagement.Adapters.TicketSystem
                 FirstName = FindValue("Name"),
                 LastName = FindValue("Surname"),
                 MembershipNumber = FindValue("Member ID (reporter)"),
-                FirstLevelUnit = FindValue("Hufiec"), //TODO Add "Hufiec"
-                SecondLevelUnit = FindValue("Chorągiew"), //TODO Add "Chorągiew"
+                FirstLevelUnit = FindValue("Hufiec"), // TODO Add "Hufiec"
+                SecondLevelUnit = FindValue("Chorągiew"), // TODO Add "Chorągiew"
             };
 
             return isAnyFieldMissing ? null : request;
