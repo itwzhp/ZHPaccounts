@@ -42,15 +42,18 @@ namespace Zhp.Office.AccountManagement.Domain.Services
                 token.ThrowIfCancellationRequested();
 
                 tickets = await ticketRepository.GetApprovedActivationRequests(token);
+                logger.LogInformation($"Received {tickets.Count} requests.");
 
                 token.ThrowIfCancellationRequested();
 
                 var (validTickets, duplicates) = FindDuplicates(tickets);
+                logger.LogInformation($"Found {duplicates.Count} duplicated requests.");
 
                 var tasks = validTickets.Select(t => HandleTicket(t, token))
                     .Concat(duplicates.Select(t => HandleDuplicate(t, token)));
 
                 await Task.WhenAll(tasks.ToList());
+                logger.LogInformation($"Batch finished");
             } while (tickets.Any());
         }
 

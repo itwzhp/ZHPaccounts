@@ -16,15 +16,17 @@ namespace Zhp.Office.AccountManagement.Adapters.TicketSystem
         private static readonly ConcurrentDictionary<string, Issue> cache = new ConcurrentDictionary<string, Issue>();
         private readonly Jira jiraClient;
         private readonly ILogger<JiraTicketRepository> log;
+        private readonly IJiraRequestMapper mapper;
         private readonly bool enableChanges;
         private readonly JiraConfig jiraConfig;
 
         private bool wereSomeRequestsAlreadyReturned = false;
 
-        public JiraTicketRepository(Jira jiraClient, FunctionConfig config, ILogger<JiraTicketRepository> log)
+        public JiraTicketRepository(Jira jiraClient, FunctionConfig config, ILogger<JiraTicketRepository> log, IJiraRequestMapper mapper)
         {
             this.jiraClient = jiraClient;
             this.log = log;
+            this.mapper = mapper;
             this.jiraConfig = config.Jira;
             this.enableChanges = config.EnableChanges;
         }
@@ -43,34 +45,7 @@ namespace Zhp.Office.AccountManagement.Adapters.TicketSystem
             results.ForEach(r => cache.TryAdd(r.Key.Value, r));
 
             wereSomeRequestsAlreadyReturned = true;
-            return results.Select(Map).OfType<ActivationRequest>().ToList();
-        }
-
-        public static ActivationRequest? Map(Issue issue)
-        {
-            Dictionary<string, string?> customFields = issue.CustomFields.ToDictionary(f => f.Name, f => f.Values?.FirstOrDefault());
-            bool isAnyFieldMissing = false;
-
-            string FindValue(string label)
-            {
-                if (customFields.TryGetValue(label, out var value) && value != null)
-                    return value;
-
-                isAnyFieldMissing = true;
-                return string.Empty;
-            }
-
-            var request = new ActivationRequest
-            {
-                Id = issue.Key.Value,
-                FirstName = FindValue("Name"),
-                LastName = FindValue("Surname"),
-                MembershipNumber = FindValue("Member ID (reporter)"),
-                FirstLevelUnit = FindValue("Hufiec"), // TODO Add "Hufiec"
-                SecondLevelUnit = FindValue("Chorągiew"), // TODO Add "Chorągiew"
-            };
-
-            return isAnyFieldMissing ? null : request;
+            return results.Select(mapper.Map).OfType<ActivationRequest>().ToList();
         }
 
         public async Task MarkAsDone(string id, string? comment, CancellationToken token)

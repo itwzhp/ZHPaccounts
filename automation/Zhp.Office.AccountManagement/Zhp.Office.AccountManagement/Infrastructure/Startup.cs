@@ -28,6 +28,7 @@ namespace Zhp.Office.AccountManagement.Infrastructure
 
             s.AddSingleton(CreateJiraClient);
             s.AddTransient<ITicketRepository, JiraTicketRepository>();
+            s.AddTransient<IJiraRequestMapper, JiraRequestMapper>();
 
             s.AddSingleton(CreateGraphClient);
             s.AddTransient<IAccountManager, AzureActiveDirectoryClient>();
