@@ -20,7 +20,7 @@ jobs:
         run: dotnet build --configuration Release automation/Zhp.Office.AccountManagement
 
       - name: Test
-        run: dotnet build --configuration Release automation/Zhp.Office.AccountManagement
+        run: dotnet test --configuration Release automation/Zhp.Office.AccountManagement
       
       - name: Prepare publish package
         run: dotnet publish --configuration Release --output app automation/Zhp.Office.AccountManagement/Zhp.Office.AccountManagement
