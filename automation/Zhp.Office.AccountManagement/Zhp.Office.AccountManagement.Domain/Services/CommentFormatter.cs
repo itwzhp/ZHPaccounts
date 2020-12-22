@@ -1,14 +1,15 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Net.Mail;
 using System.Reflection;
 using System.Text;
+using Zhp.Office.AccountManagement.Model;
 
 namespace Zhp.Office.AccountManagement.Domain.Services
 {
     public interface ICommentFormatter
     {
-        string GetMailCreatedComment(MailAddress mail, string password);
+        string GetMailCreatedComment(MailAddress mail, string password, ActivationRequest request);
     }
 
     public class CommentFormatter : ICommentFormatter
@@ -16,8 +17,7 @@ namespace Zhp.Office.AccountManagement.Domain.Services
         private static readonly ConcurrentDictionary<string, string> templateCache = new ConcurrentDictionary<string, string>();
 
         private static string GetTemplate(string name)
-            => templateCache.GetOrAdd(name, n =>
-            {
+            => templateCache.GetOrAdd(name, n => {
                 var assembly = Assembly.GetExecutingAssembly();
                 using var resourceStream = assembly.GetManifestResourceStream($"Zhp.Office.AccountManagement.Domain.CommentTemplates.{n}.txt");
                 using var reader = new StreamReader(resourceStream, Encoding.UTF8);
@@ -36,10 +36,13 @@ namespace Zhp.Office.AccountManagement.Domain.Services
             return mesage.ToString();
         }
 
-        public string GetMailCreatedComment(MailAddress mail, string password)
+        public string GetMailCreatedComment(MailAddress mail, string password, ActivationRequest request)
             => GetComment(
                 "AccountCreated",
                 ("login", mail.ToString()),
-                ("password", password));
+                ("password", password),
+                ("firstLevelUnit", request.FirstLevelUnit),
+                ("secondLevelUnit", request.SecondLevelUnit),
+                ("membershipNumber", request.MembershipNumber));
     }
 }

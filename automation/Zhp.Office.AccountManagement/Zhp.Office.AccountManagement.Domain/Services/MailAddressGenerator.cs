@@ -1,4 +1,4 @@
-﻿using Diacritics.Extensions;
+using Diacritics.Extensions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;

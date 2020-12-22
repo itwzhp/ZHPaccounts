@@ -1,7 +1,7 @@
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
+using System.Threading;
+using System.Threading.Tasks;
 using Zhp.Office.AccountManagement.Domain.Services;
 
 namespace Zhp.Office.AccountManagement.Functions
@@ -18,7 +18,7 @@ namespace Zhp.Office.AccountManagement.Functions
         }
 
         [FunctionName("CreateAccounts")]
-        public async Task Run([TimerTrigger("0 17 3 * * *", RunOnStartup = false)]TimerInfo myTimer, CancellationToken token)
+        public async Task Run([TimerTrigger("0 17 3 * * *", RunOnStartup = false)] TimerInfo myTimer, CancellationToken token)
         {
             log.LogInformation("Running function CreateAccounts...");
             await service.CreateAccounts(token);

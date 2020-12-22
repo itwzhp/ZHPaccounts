@@ -1,9 +1,12 @@
-﻿Druhno/Druhu, 
+Druhno/Druhu, 
 właśnie założyliśmy dla Ciebie konto ZHP. Możesz się do niego zalogować przez stronę https://www.office.com lub https://poczta.zhp.pl. 
 
-Szczegóły użytkownika:
+Szczegóły kota:
 Nazwa użytkownika: {login}
 Hasło: {password}
+Numer ewidencji: {membershipNumber}
+Hufiec: {firstLevelUnit}
+Chorągiew: {secondLevelUnit}
 
 Od teraz masz dostęp do aplikacji takich jak Outlook, Teams, Word, Excel, Forms i innych. Są one dostępne w wersji Online przez przeglądarkę. 
 W celach bezpieczeństwa może być wymagana dwuetapowa weryfikacja. Oznacza to, że do zalogowania potrzebne będzie dodatkowe potwierdzenie tożsamości poprzez prywatny numer telefonu, adres e-mail lub aplikację na telefon. Koniecznie uzupełnij wymagane dane podczas pierwszego logowania! 

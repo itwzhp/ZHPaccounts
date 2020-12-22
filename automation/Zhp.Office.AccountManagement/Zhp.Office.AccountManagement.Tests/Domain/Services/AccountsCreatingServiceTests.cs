@@ -1,4 +1,4 @@
-﻿using Divergic.Logging.Xunit;
+using Divergic.Logging.Xunit;
 using FluentAssertions;
 using NSubstitute;
 using NSubstitute.Core;
@@ -51,7 +51,7 @@ namespace Zhp.Office.AccountManagement.Tests.Domain.Services
         {
             logger = outputHelper.BuildLoggerFor<AccountsCreatingService>();
             var commentFormatter = Substitute.For<ICommentFormatter>();
-            commentFormatter.GetMailCreatedComment(null!, null!).Returns("SomeComment");
+            commentFormatter.GetMailCreatedComment(null!, null!, null!).Returns("SomeComment");
             passwordGenerator.GeneratePassword().Returns("czuwaj!.8");
             mailAddressGenerator.GetPossibleAddressesForUser(null!, null!)
                 .ReturnsForAnyArgs(new[]
@@ -80,7 +80,7 @@ namespace Zhp.Office.AccountManagement.Tests.Domain.Services
 
             await subject.CreateAccounts(CancellationToken.None);
 
-            foreach(var ticket in testRequests)
+            foreach (var ticket in testRequests)
             {
                 await accountManager.Received().TryAddUser(Arg.Is<ActivationRequest>(r => r.Id == ticket.Id), new MailAddress("test@example.com"), "czuwaj!.8", CancellationToken.None);
                 await ticketRepository.Received().MarkAsDone(ticket.Id, Arg.Any<string?>(), Arg.Any<CancellationToken>());

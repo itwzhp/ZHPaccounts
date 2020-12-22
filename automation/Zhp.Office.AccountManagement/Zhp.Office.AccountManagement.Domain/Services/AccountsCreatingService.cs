@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +25,7 @@ namespace Zhp.Office.AccountManagement.Domain.Services
             IPasswordGenerator passwordGenerator,
             IMailAddressGenerator mailAddressGenerator,
             ICommentFormatter commentFormatter)
-        { 
+        {
             this.accountManager = accountManager;
             this.ticketRepository = ticketRepository;
             this.logger = logger;
@@ -81,7 +81,7 @@ namespace Zhp.Office.AccountManagement.Domain.Services
                 if (addedMailAddress == null)
                     throw new Exception("Unknown error, unable to create user");
 
-                var comment = commentFormatter.GetMailCreatedComment(addedMailAddress, password);
+                var comment = commentFormatter.GetMailCreatedComment(addedMailAddress, password, ticket);
                 await ticketRepository.MarkAsDone(ticket.Id, comment);
             }
             catch (OperationCanceledException) when (token.IsCancellationRequested) { }

@@ -20,6 +20,6 @@ namespace Zhp.Office.AccountManagement.Tests
         }
 
         public override IEnumerable<object[]> GetData(MethodInfo testMethod)
-            => Enumerable.Range(1, this.count).Select(i => new object[] { i });
+            => Enumerable.Range(1, count).Select(i => new object[] { i });
     }
 }

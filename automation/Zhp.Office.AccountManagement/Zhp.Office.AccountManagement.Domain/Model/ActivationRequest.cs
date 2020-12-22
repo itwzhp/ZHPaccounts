@@ -7,7 +7,7 @@
         public string LastName { get; set; } = string.Empty;
 
         public string MembershipNumber { get; set; } = string.Empty;
-        
+
         /// <summary>
         /// Full name - "Hufiec Sopot", "Chorągiew Stołeczna" or "Główna Kwatera ZHP"
         /// </summary>

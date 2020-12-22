@@ -1,4 +1,4 @@
-﻿using Atlassian.Jira;
+using Atlassian.Jira;
 using System.Linq;
 using Zhp.Office.AccountManagement.Model;
 

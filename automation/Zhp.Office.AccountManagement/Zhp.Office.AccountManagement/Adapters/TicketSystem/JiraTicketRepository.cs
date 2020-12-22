@@ -27,8 +27,8 @@ namespace Zhp.Office.AccountManagement.Adapters.TicketSystem
             this.jiraClient = jiraClient;
             this.log = log;
             this.mapper = mapper;
-            this.jiraConfig = config.Jira;
-            this.enableChanges = config.EnableChanges;
+            jiraConfig = config.Jira;
+            enableChanges = config.EnableChanges;
         }
 
         public async Task<IReadOnlyCollection<ActivationRequest>> GetApprovedActivationRequests(CancellationToken token)

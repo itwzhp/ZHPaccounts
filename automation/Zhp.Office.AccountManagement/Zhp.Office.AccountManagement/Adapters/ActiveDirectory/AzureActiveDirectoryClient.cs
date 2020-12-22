@@ -22,8 +22,8 @@ namespace Zhp.Office.AccountManagement.Adapters.ActiveDirectory
         {
             this.client = client;
             this.logger = logger;
-            this.enableChanges = config.EnableChanges;
-            this.activeDirectoryConfig = config.ActiveDirectory;
+            enableChanges = config.EnableChanges;
+            activeDirectoryConfig = config.ActiveDirectory;
         }
 
         public async ValueTask<bool> TryAddUser(ActivationRequest request, MailAddress email, string password, CancellationToken token)
