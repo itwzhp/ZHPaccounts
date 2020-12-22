@@ -1,10 +1,10 @@
 Druhno/Druhu, 
 właśnie założyliśmy dla Ciebie konto ZHP. Możesz się do niego zalogować przez stronę https://www.office.com lub https://poczta.zhp.pl. 
 
-Szczegóły kota:
+Szczegóły konta:
 Nazwa użytkownika: {login}
 Hasło: {password}
-Numer ewidencji: {membershipNumber}
+Numer członkowski: {membershipNumber}
 Hufiec: {firstLevelUnit}
 Chorągiew: {secondLevelUnit}
 
