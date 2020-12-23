@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -28,10 +28,10 @@ namespace Zhp.Office.AccountManagement.Tests.Domain.Services
 
         [Theory, Repeat(50)]
         public void PasswordShouldHaveValidLength(int runNumber)
-            => subject.GeneratePassword().Length.Should().BeGreaterOrEqualTo(8).And.BeLessOrEqualTo(256);
+            => subject.GeneratePassword().Length.Should().Be(8);
 
         [Theory, Repeat(200)]
-        public void PasswordShouldHave3Of4CharGroups(int runNumber)
+        public void PasswordShouldHave3Of3CharGroups(int runNumber)
         {
             var basicGroups = new[] { UnicodeCategory.LowercaseLetter, UnicodeCategory.UppercaseLetter, UnicodeCategory.DecimalDigitNumber };
 
@@ -42,12 +42,12 @@ namespace Zhp.Office.AccountManagement.Tests.Domain.Services
             var foundGroups = basicGroups.Count(g => charGroups.Contains(g))
                             + (charGroups.Any(g => !basicGroups.Contains(g) && g != char.GetUnicodeCategory(' ')) ? 1 : 0);
 
-            foundGroups.Should().BeGreaterOrEqualTo(3, $"Password {password} is too simple");
+            foundGroups.Should().Be(3, $"Password {password} is too simple");
         }
 
         [Theory, Repeat(200)]
         public void PasswordsShouldContainOnlyAllowedChars(int runNumber)
-            => subject.GeneratePassword().Should().MatchRegex(@"^[a-zA-Z0-9 @#$%^&*\-_!+=\[\]{}|\\:',\.?/`~""();]*$");
+            => subject.GeneratePassword().Should().MatchRegex(@"^[a-zA-Z0-9]*$");
 
         [Theory, Repeat(50)]
         public void PasswordsShouldNotContainUnicode(int runNumber)
