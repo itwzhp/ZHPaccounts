@@ -28,7 +28,7 @@ namespace Zhp.Office.AccountManagement.Tests.Domain.Services
 
         [Theory, Repeat(50)]
         public void PasswordShouldHaveValidLength(int runNumber)
-            => subject.GeneratePassword().Length.Should().Be(8);
+            => subject.GeneratePassword().Should().HaveLength(8);
 
         [Theory, Repeat(200)]
         public void PasswordShouldHave3Of3CharGroups(int runNumber)
