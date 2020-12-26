@@ -18,7 +18,8 @@
     "variables": {
         "storageAccountName": "zhpofficeaccountstorage",
         "functionAppName": "zhp-officeaccounts",
-        "applicationInsightsName": "zhp-officeavccounts-insights"
+        "applicationInsightsName": "zhp-officeavccounts-insights",
+        "servicePlanName": "zhp-officeavccounts-serviceplan"
     },
     "resources": [
         {
@@ -30,6 +31,17 @@
             "sku": {
                 "name": "Standard_LRS",
                 "tier": "Standard"
+            }
+        },
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2015-04-01",
+            "name": "[variables('servicePlanName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "name": "[variables('servicePlanName')]",
+                "computeMode": "Dynamic",
+                "sku": "Dynamic"
             }
         },
         {
@@ -53,9 +65,11 @@
             "kind": "functionapp",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
-                "[resourceId('microsoft.insights/components', variables('applicationInsightsName'))]"
+                "[resourceId('microsoft.insights/components', variables('applicationInsightsName'))]",
+                "[resourceId('Microsoft.Web/serverfarms', variables('servicePlanName'))]"
             ],
             "properties": {
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('servicePlanName'))]",
                 "siteConfig": {
                     "appSettings": [
                         {
@@ -76,7 +90,7 @@
                             "value": "~3"
                         },
                         {
-                            "name": "Jira:User",
+                            "name": "Jira__User",
                             "value": "API"
                         },
                         {
