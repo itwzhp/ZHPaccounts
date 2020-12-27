@@ -72,7 +72,7 @@ jobs:
         subscriptionId: 69111246-db23-463c-82b2-7815ed5f8a1a # todo which subscription?
         resourceGroupName: office-accountmanagement
         template: deployment.arm.json
-        parameters: JiraPassword='${{ secrets.JIRA_API_PASSWORD }}' ActiveDirectoryCertBase64='${{ secrets.AAD_APP_CERTIFICATE }}' ActiveDirectoryCertPassword='${{ secrets.AAD_APP_CERTIFICATE_PASSWORD }}'
+        parameters: JiraPassword=${{ secrets.JIRA_API_PASSWORD }} ActiveDirectoryCertBase64=${{ secrets.AAD_APP_CERTIFICATE }} ActiveDirectoryCertPassword=${{ secrets.AAD_APP_CERTIFICATE_PASSWORD }}
 
     - name: Upload files
       uses: Azure/functions-action@v1

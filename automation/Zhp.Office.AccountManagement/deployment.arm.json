@@ -57,6 +57,7 @@
                 "Request_Source": "IbizaWebAppExtensionCreate"
             }
         },
+        //todo zrobić linux
         {
             "apiVersion": "2018-11-01",
             "type": "Microsoft.Web/sites",
