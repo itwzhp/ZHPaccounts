@@ -35,13 +35,20 @@
         },
         {
             "type": "Microsoft.Web/serverfarms",
-            "apiVersion": "2015-04-01",
+            "apiVersion": "2016-09-01",
             "name": "[variables('servicePlanName')]",
             "location": "[resourceGroup().location]",
+            "kind": "functionapp",
             "properties": {
                 "name": "[variables('servicePlanName')]",
-                "computeMode": "Dynamic",
-                "sku": "Dynamic"
+                "reserved": true
+            },
+            "sku": {
+                "name": "Y1",
+                "tier": "Dynamic",
+                "size": "Y1",
+                "family": "Y",
+                "capacity": 0
             }
         },
         {
@@ -57,13 +64,12 @@
                 "Request_Source": "IbizaWebAppExtensionCreate"
             }
         },
-        //todo zrobić linux
         {
             "apiVersion": "2018-11-01",
             "type": "Microsoft.Web/sites",
             "name": "[variables('functionAppName')]",
             "location": "[resourceGroup().location]",
-            "kind": "functionapp",
+            "kind": "functionapp,linux",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
                 "[resourceId('microsoft.insights/components', variables('applicationInsightsName'))]",
@@ -72,6 +78,7 @@
             "properties": {
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('servicePlanName'))]",
                 "siteConfig": {
+                    "linuxFxVersion": "DOTNET|3.1",
                     "appSettings": [
                         {
                             "name": "AzureWebJobsStorage",

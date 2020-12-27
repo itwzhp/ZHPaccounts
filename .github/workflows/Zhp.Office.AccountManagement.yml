@@ -39,9 +39,7 @@ jobs:
     - name: Prepare publish package
       run: |
         dotnet publish --configuration Release --output app automation/Zhp.Office.AccountManagement/Zhp.Office.AccountManagement &&
-        cp automation/Zhp.Office.AccountManagement/deployment.arm.json app/ &&
-        zip
-
+        cp automation/Zhp.Office.AccountManagement/deployment.arm.json app/
 
     - name: Upload package
       uses: actions/upload-artifact@v2
