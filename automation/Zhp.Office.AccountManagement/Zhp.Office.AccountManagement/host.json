@@ -1,16 +1,16 @@
 {
-  "version": "2.0",
-  "logging": {
-    "applicationInsights": {
-      "samplingExcludedTypes": "Request",
-      "samplingSettings": {
-        "isEnabled": true
-      }
-    },
-    "logLevel": {
-      "Zhp.Office": "Debug",
-      "default": "Warning",
-      "Microsoft.Graph": "Information"
+    "version": "2.0",
+    "logging": {
+        "applicationInsights": {
+            "samplingExcludedTypes": "Request",
+            "samplingSettings": {
+                "isEnabled": false
+            }
+        },
+        "logLevel": {
+            "Zhp.Office": "Debug",
+            "default": "Information",
+            "Microsoft.Graph": "Information"
+        }
     }
-  }
 }

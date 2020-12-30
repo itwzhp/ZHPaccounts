@@ -18,8 +18,8 @@
     "variables": {
         "storageAccountName": "zhpofficeaccountstorage",
         "functionAppName": "zhp-officeaccounts",
-        "applicationInsightsName": "zhp-officeavccounts-insights",
-        "servicePlanName": "zhp-officeavccounts-serviceplan"
+        "applicationInsightsName": "zhp-officeaccounts-insights",
+        "servicePlanName": "zhp-officeaccounts-serviceplan"
     },
     "resources": [
         {
