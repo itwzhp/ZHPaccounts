@@ -12,6 +12,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F76DABF2-D17B-4348-BDB0-1E7B0717A615}"
 	ProjectSection(SolutionItems) = preProject
 		..\..\.editorconfig = ..\..\.editorconfig
+		.gitignore = .gitignore
 		deployment.arm.json = deployment.arm.json
 		Directory.Build.props = Directory.Build.props
 		Readme.md = Readme.md
