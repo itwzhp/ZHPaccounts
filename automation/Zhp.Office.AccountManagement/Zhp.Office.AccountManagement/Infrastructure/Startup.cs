@@ -1,4 +1,4 @@
-﻿using Atlassian.Jira;
+using Atlassian.Jira;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -78,10 +78,11 @@ namespace Zhp.Office.AccountManagement.Infrastructure
 
         public override void ConfigureAppConfiguration(IFunctionsConfigurationBuilder builder)
         {
-            base.ConfigureAppConfiguration(builder);
-
-            builder.ConfigurationBuilder.SetBasePath(builder.GetContext().ApplicationRootPath)
+            builder.ConfigurationBuilder
+                .SetBasePath(builder.GetContext().ApplicationRootPath)
                 .AddJsonFile("appsettings.json");
+
+            base.ConfigureAppConfiguration(builder);
         }
 
         private FunctionConfig LoadConfig(IServiceProvider c) => 
