@@ -23,8 +23,6 @@ namespace Zhp.Office.AccountManagement.Functions
         [FunctionName("CreateAccounts")]
         public async Task Run([TimerTrigger("0 17 3 * * *", RunOnStartup = false)] TimerInfo myTimer, CancellationToken token)
         {
-            //TODO TMP DO NOT MERGE
-            this.log.LogInformation($"JIRA Pass: {config.Jira.Password}");
             log.LogInformation("Running function CreateAccounts...");
             await service.CreateAccounts(token);
             log.LogInformation("Function CreateAccounts finished.");
