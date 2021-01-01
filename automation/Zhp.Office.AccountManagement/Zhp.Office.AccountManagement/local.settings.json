@@ -1,0 +1,7 @@
+{
+    "IsEncrypted": false,
+    "Values": {
+        "AzureWebJobsStorage": "UseDevelopmentStorage=true"
+// Don't add secrets here - use dotnet user-secrets
+    }
+}

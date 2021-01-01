@@ -7,6 +7,7 @@ using Microsoft.Graph;
 using Microsoft.Graph.Auth;
 using Microsoft.Identity.Client;
 using System;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using Zhp.Office.AccountManagement.Adapters.ActiveDirectory;
@@ -20,10 +21,25 @@ namespace Zhp.Office.AccountManagement.Infrastructure
     {
         private bool isDevelopmentEnvironment;
 
-        public override void Configure(IFunctionsHostBuilder builder)
+        public override void ConfigureAppConfiguration(IFunctionsConfigurationBuilder builder)
         {
             isDevelopmentEnvironment = builder.GetContext().EnvironmentName != "Production";
 
+            var b = builder.ConfigurationBuilder;
+
+            b.SetBasePath(builder.GetContext().ApplicationRootPath)
+                .AddJsonFile("appsettings.json", false, false);
+
+            if (isDevelopmentEnvironment)
+                b.AddUserSecrets(Assembly.GetExecutingAssembly(), false);
+
+            b.AddEnvironmentVariables();
+
+            base.ConfigureAppConfiguration(builder);
+        }
+
+        public override void Configure(IFunctionsHostBuilder builder)
+        {
             var s = builder.Services;
 
             s.AddSingleton(CreateJiraClient);
@@ -75,15 +91,6 @@ namespace Zhp.Office.AccountManagement.Infrastructure
             }
 
             return new GraphServiceClient(provider);
-        }
-
-        public override void ConfigureAppConfiguration(IFunctionsConfigurationBuilder builder)
-        {
-            builder.ConfigurationBuilder
-                .SetBasePath(builder.GetContext().ApplicationRootPath)
-                .AddJsonFile("appsettings.json");
-
-            base.ConfigureAppConfiguration(builder);
         }
 
         private FunctionConfig LoadConfig(IServiceProvider c) => 
