@@ -50,7 +50,7 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    #if: success() && github.ref == 'refs/heads/master'
+    if: success() && github.ref == 'refs/heads/master'
     needs: build
     steps:
     - name: Download package
