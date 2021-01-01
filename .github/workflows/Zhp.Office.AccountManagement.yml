@@ -31,7 +31,7 @@ jobs:
       uses: azure/arm-deploy@v1
       with:
         deploymentMode: Validate
-        subscriptionId: 69111246-db23-463c-82b2-7815ed5f8a1a # todo which subscription?
+        subscriptionId: 69111246-db23-463c-82b2-7815ed5f8a1a
         resourceGroupName: office-accountmanagement
         template: automation/Zhp.Office.AccountManagement/deployment.arm.json
         parameters: JiraPassword='${{ secrets.JIRA_API_PASSWORD }}' ActiveDirectoryCertBase64='${{ secrets.AAD_APP_CERTIFICATE }}' ActiveDirectoryCertPassword='${{ secrets.AAD_APP_CERTIFICATE_PASSWORD }}'
@@ -50,7 +50,7 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    #if: success() && github.ref == 'refs/heads/master' todo uncomment before merging!
+    if: success() && github.ref == 'refs/heads/master'
     needs: build
     steps:
     - name: Download package
@@ -67,7 +67,7 @@ jobs:
       uses: azure/arm-deploy@v1
       with:
         deploymentMode: Complete
-        subscriptionId: 69111246-db23-463c-82b2-7815ed5f8a1a # todo which subscription?
+        subscriptionId: 69111246-db23-463c-82b2-7815ed5f8a1a
         resourceGroupName: office-accountmanagement
         template: deployment.arm.json
         parameters: JiraPassword=${{ secrets.JIRA_API_PASSWORD }} ActiveDirectoryCertBase64=${{ secrets.AAD_APP_CERTIFICATE }} ActiveDirectoryCertPassword=${{ secrets.AAD_APP_CERTIFICATE_PASSWORD }}
