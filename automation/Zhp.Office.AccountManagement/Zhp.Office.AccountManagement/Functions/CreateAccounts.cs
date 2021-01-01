@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
 using Zhp.Office.AccountManagement.Domain.Services;
+using Zhp.Office.AccountManagement.Infrastructure;
 
 namespace Zhp.Office.AccountManagement.Functions
 {
@@ -10,11 +11,13 @@ namespace Zhp.Office.AccountManagement.Functions
     {
         private readonly AccountsCreatingService service;
         private readonly ILogger<CreateAccounts> log;
+        private readonly FunctionConfig config;
 
-        public CreateAccounts(AccountsCreatingService service, ILogger<CreateAccounts> log)
+        public CreateAccounts(AccountsCreatingService service, ILogger<CreateAccounts> log, FunctionConfig config)
         {
             this.service = service;
             this.log = log;
+            this.config = config;
         }
 
         [FunctionName("CreateAccounts")]

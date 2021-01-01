@@ -1,0 +1,125 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "JiraPassword": {
+            "type": "securestring",
+            "minLength": 1
+        },
+        "ActiveDirectoryCertBase64": {
+            "type": "securestring",
+            "minLength": 1
+        },
+        "ActiveDirectoryCertPassword": {
+            "type": "securestring",
+            "minLength": 1
+        }
+    },
+    "variables": {
+        "storageAccountName": "zhpofficeaccountstorage",
+        "functionAppName": "zhp-officeaccounts",
+        "applicationInsightsName": "zhp-officeaccounts-insights",
+        "servicePlanName": "zhp-officeaccounts-serviceplan"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "[variables('storageAccountName')]",
+            "apiVersion": "2019-06-01",
+            "location": "[resourceGroup().location]",
+            "kind": "StorageV2",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            }
+        },
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2016-09-01",
+            "name": "[variables('servicePlanName')]",
+            "location": "[resourceGroup().location]",
+            "kind": "functionapp",
+            "properties": {
+                "name": "[variables('servicePlanName')]",
+                "reserved": true
+            },
+            "sku": {
+                "name": "Y1",
+                "tier": "Dynamic",
+                "size": "Y1",
+                "family": "Y",
+                "capacity": 0
+            }
+        },
+        {
+            "type": "microsoft.insights/components",
+            "apiVersion": "2020-02-02-preview",
+            "name": "[variables('applicationInsightsName')]",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "[concat('hidden-link:', resourceId('Microsoft.Web/sites', variables('applicationInsightsName')))]": "Resource"
+            },
+            "properties": {
+                "ApplicationId": "[variables('applicationInsightsName')]",
+                "Request_Source": "IbizaWebAppExtensionCreate"
+            }
+        },
+        {
+            "apiVersion": "2018-11-01",
+            "type": "Microsoft.Web/sites",
+            "name": "[variables('functionAppName')]",
+            "location": "[resourceGroup().location]",
+            "kind": "functionapp,linux",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+                "[resourceId('microsoft.insights/components', variables('applicationInsightsName'))]",
+                "[resourceId('Microsoft.Web/serverfarms', variables('servicePlanName'))]"
+            ],
+            "properties": {
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('servicePlanName'))]",
+                "siteConfig": {
+                    "linuxFxVersion": "DOTNET|3.1",
+                    "appSettings": [
+                        {
+                            "name": "AzureWebJobsStorage",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')),'2019-06-01').keys[0].value)]"
+
+                        },
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(resourceId('microsoft.insights/components', variables('applicationInsightsName')), '2020-02-02-preview').InstrumentationKey]"
+                        },
+                        {
+                            "name": "FUNCTIONS_WORKER_RUNTIME",
+                            "value": "dotnet"
+                        },
+                        {
+                            "name": "FUNCTIONS_EXTENSION_VERSION",
+                            "value": "~3"
+                        },
+                        {
+                            "name": "Jira__User",
+                            "value": "API"
+                        },
+                        {
+                            "name": "Jira__Password",
+                            "value": "[parameters('JiraPassword')]"
+                        },
+                        {
+                            "name": "ActiveDirectory__ProdCertificateBase64",
+                            "value": "[parameters('ActiveDirectoryCertBase64')]"
+                        },
+                        {
+                            "name": "ActiveDirectory__ProdCertPassword",
+                            "value": "[parameters('ActiveDirectoryCertPassword')]"
+                        },
+                        {
+                            "name": "EnableChanges",
+                            "value": "false" // todo enable when ready
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}

@@ -1,4 +1,4 @@
-﻿using Atlassian.Jira;
+using Atlassian.Jira;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -64,10 +64,11 @@ namespace Zhp.Office.AccountManagement.Infrastructure
             }
             else
             {
+                var cert = Convert.FromBase64String(config.ProdCertificateBase64);
                 var confidentialClientApplication = ConfidentialClientApplicationBuilder
                     .Create(config.ProdClientId)
                     .WithTenantId(config.TenantId)
-                    .WithCertificate(new X509Certificate2(config.ProdCertificate, config.ProdCertPassword))
+                    .WithCertificate(new X509Certificate2(cert, config.ProdCertPassword))
                     .Build();
 
                 provider = new ClientCredentialProvider(confidentialClientApplication);
@@ -78,10 +79,11 @@ namespace Zhp.Office.AccountManagement.Infrastructure
 
         public override void ConfigureAppConfiguration(IFunctionsConfigurationBuilder builder)
         {
-            base.ConfigureAppConfiguration(builder);
-
-            builder.ConfigurationBuilder.SetBasePath(builder.GetContext().ApplicationRootPath)
+            builder.ConfigurationBuilder
+                .SetBasePath(builder.GetContext().ApplicationRootPath)
                 .AddJsonFile("appsettings.json");
+
+            base.ConfigureAppConfiguration(builder);
         }
 
         private FunctionConfig LoadConfig(IServiceProvider c) => 
