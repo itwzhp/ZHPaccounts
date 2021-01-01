@@ -1,4 +1,5 @@
 using Atlassian.Jira;
+using Microsoft.Extensions.Logging;
 using System.Linq;
 using Zhp.Office.AccountManagement.Model;
 
@@ -11,17 +12,29 @@ namespace Zhp.Office.AccountManagement.Adapters.TicketSystem
 
     public class JiraRequestMapper : IJiraRequestMapper
     {
+        private readonly ILogger<JiraRequestMapper> log;
+
+        public JiraRequestMapper(ILogger<JiraRequestMapper> log)
+        {
+            this.log = log;
+        }
+
         public ActivationRequest? Map(Issue issue)
         {
             var customFields = issue.CustomFields.ToDictionary(f => f.Name, f => f.Values?.FirstOrDefault());
             bool isAnyFieldMissing = false;
 
-            string FindValue(string label)
+            string FindValue(string label, bool optional = false)
             {
                 if (customFields.TryGetValue(label, out var value) && value != null)
                     return value;
 
-                isAnyFieldMissing = true;
+                if (!optional)
+                {
+                    isAnyFieldMissing = true;
+                    log.LogWarning($"Jira ticket {issue.Key.Value} ignored, missing field {label}");
+                }
+
                 return string.Empty;
             }
 
@@ -31,7 +44,7 @@ namespace Zhp.Office.AccountManagement.Adapters.TicketSystem
                 FirstName = FindValue("Name"),
                 LastName = FindValue("Surname"),
                 MembershipNumber = FindValue("Member ID (reporter)"),
-                FirstLevelUnit = FindValue("Hufiec"),
+                FirstLevelUnit = FindValue("Hufiec", optional: true),
                 SecondLevelUnit = FindValue("Chorągiew"),
             };
 

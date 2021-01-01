@@ -7,6 +7,7 @@ using Microsoft.Graph;
 using Microsoft.Graph.Auth;
 using Microsoft.Identity.Client;
 using System;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using Zhp.Office.AccountManagement.Adapters.ActiveDirectory;
@@ -18,11 +19,26 @@ namespace Zhp.Office.AccountManagement.Infrastructure
 {
     public class Startup : FunctionsStartup
     {
-        private bool isDevelopmentEnvironment;
+        public override void ConfigureAppConfiguration(IFunctionsConfigurationBuilder builder)
+        {
+            bool isDevelopmentEnvironment = builder.GetContext().EnvironmentName != "Production";
+
+            var b = builder.ConfigurationBuilder;
+
+            b.SetBasePath(builder.GetContext().ApplicationRootPath)
+                .AddJsonFile("appsettings.json", false, false);
+
+            if (isDevelopmentEnvironment)
+                b.AddUserSecrets(Assembly.GetExecutingAssembly(), false);
+
+            b.AddEnvironmentVariables();
+
+            base.ConfigureAppConfiguration(builder);
+        }
 
         public override void Configure(IFunctionsHostBuilder builder)
         {
-            isDevelopmentEnvironment = builder.GetContext().EnvironmentName != "Production";
+            bool isDevelopmentEnvironment = builder.GetContext().EnvironmentName != "Production";
 
             var s = builder.Services;
 
@@ -40,67 +56,58 @@ namespace Zhp.Office.AccountManagement.Infrastructure
             s.AddTransient<IMailAddressGenerator, MailAddressGenerator>();
             s.AddTransient<AccountsCreatingService>();
             s.AddSingleton(s => RandomNumberGenerator.Create());
-        }
 
-        private IGraphServiceClient CreateGraphClient(IServiceProvider c)
-        {
-            var config = c.GetRequiredService<FunctionConfig>().ActiveDirectory;
-            IAuthenticationProvider provider;
-
-            if (isDevelopmentEnvironment)
+            IGraphServiceClient CreateGraphClient(IServiceProvider c)
             {
-                var logger = c.GetRequiredService<ILogger<InteractiveAuthenticationProvider>>();
-                void log(Microsoft.Identity.Client.LogLevel level, string message, bool containsPii)
-                    => logger.LogDebug(message);
+                var config = c.GetRequiredService<FunctionConfig>().ActiveDirectory;
+                IAuthenticationProvider provider;
 
-                var publicClientApplication = PublicClientApplicationBuilder
-                    .Create(config.DevClientId)
-                    .WithAuthority(AzureCloudInstance.AzurePublic, config.TenantId)
-                    .WithRedirectUri("http://localhost:1234")
-                    .WithLogging(log)
-                    .Build();
-
-                provider = new InteractiveAuthenticationProvider(publicClientApplication);
-            }
-            else
-            {
-                var cert = Convert.FromBase64String(config.ProdCertificateBase64);
-                var confidentialClientApplication = ConfidentialClientApplicationBuilder
-                    .Create(config.ProdClientId)
-                    .WithTenantId(config.TenantId)
-                    .WithCertificate(new X509Certificate2(cert, config.ProdCertPassword))
-                    .Build();
-
-                provider = new ClientCredentialProvider(confidentialClientApplication);
-            }
-
-            return new GraphServiceClient(provider);
-        }
-
-        public override void ConfigureAppConfiguration(IFunctionsConfigurationBuilder builder)
-        {
-            builder.ConfigurationBuilder
-                .SetBasePath(builder.GetContext().ApplicationRootPath)
-                .AddJsonFile("appsettings.json");
-
-            base.ConfigureAppConfiguration(builder);
-        }
-
-        private FunctionConfig LoadConfig(IServiceProvider c) => 
-            c.GetRequiredService<IConfiguration>()
-                .Get<FunctionConfig>(o => o.BindNonPublicProperties = true);
-
-        private Jira CreateJiraClient(IServiceProvider c)
-        {
-            var config = c.GetRequiredService<FunctionConfig>().Jira;
-            return Jira.CreateRestClient(
-                config.JiraUri,
-                config.User,
-                config.Password,
-                new JiraRestClientSettings
+                if (isDevelopmentEnvironment)
                 {
-                    EnableUserPrivacyMode = true,
-                });
+                    var logger = c.GetRequiredService<ILogger<InteractiveAuthenticationProvider>>();
+                    void log(Microsoft.Identity.Client.LogLevel level, string message, bool containsPii)
+                        => logger.LogDebug(message);
+
+                    var publicClientApplication = PublicClientApplicationBuilder
+                        .Create(config.DevClientId)
+                        .WithAuthority(AzureCloudInstance.AzurePublic, config.TenantId)
+                        .WithRedirectUri("http://localhost:1234")
+                        .WithLogging(log)
+                        .Build();
+
+                    provider = new InteractiveAuthenticationProvider(publicClientApplication);
+                }
+                else
+                {
+                    var cert = Convert.FromBase64String(config.ProdCertificateBase64);
+                    var confidentialClientApplication = ConfidentialClientApplicationBuilder
+                        .Create(config.ProdClientId)
+                        .WithTenantId(config.TenantId)
+                        .WithCertificate(new X509Certificate2(cert, config.ProdCertPassword))
+                        .Build();
+
+                    provider = new ClientCredentialProvider(confidentialClientApplication);
+                }
+
+                return new GraphServiceClient(provider);
+            }
+
+            static FunctionConfig LoadConfig(IServiceProvider c) =>
+                c.GetRequiredService<IConfiguration>()
+                    .Get<FunctionConfig>(o => o.BindNonPublicProperties = true);
+
+            static Jira CreateJiraClient(IServiceProvider c)
+            {
+                var config = c.GetRequiredService<FunctionConfig>().Jira;
+                return Jira.CreateRestClient(
+                    config.JiraUri,
+                    config.User,
+                    config.Password,
+                    new JiraRestClientSettings
+                    {
+                        EnableUserPrivacyMode = true,
+                    });
+            }
         }
     }
 }
