@@ -27,5 +27,12 @@ namespace Zhp.Office.AccountManagement.Tests.Domain.Services
                 .And.Contain("Chorągiew Gdańska")
                 .And.Contain("12345678");
         }
+
+        [Fact]
+        public void GetPasswordResetComment_CommentContainsPassword()
+        {
+            subject.GetPasswordResetComment(new MailAddress("test@example.com"), "SomePassword123")
+                .Should().Contain("SomePassword123");
+        }
     }
 }

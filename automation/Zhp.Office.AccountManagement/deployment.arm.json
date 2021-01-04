@@ -98,6 +98,10 @@
                             "value": "~3"
                         },
                         {
+                            "name": "AZURE_FUNCTIONS_ENVIRONMENT",
+                            "value": "Production"
+                        },
+                        {
                             "name": "Jira__User",
                             "value": "API"
                         },

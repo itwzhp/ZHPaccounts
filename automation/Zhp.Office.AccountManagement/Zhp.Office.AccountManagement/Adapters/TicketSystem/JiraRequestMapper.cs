@@ -1,13 +1,17 @@
 using Atlassian.Jira;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using Zhp.Office.AccountManagement.Model;
 
 namespace Zhp.Office.AccountManagement.Adapters.TicketSystem
 {
     public interface IJiraRequestMapper
     {
-        ActivationRequest? Map(Issue jiraIssue);
+        ActivationRequest? MapActivation(Issue jiraIssue);
+
+        PasswordResetRequest? MapPasswordReset(Issue jiraIssue);
     }
 
     public class JiraRequestMapper : IJiraRequestMapper
@@ -19,33 +23,37 @@ namespace Zhp.Office.AccountManagement.Adapters.TicketSystem
             this.log = log;
         }
 
-        public ActivationRequest? Map(Issue issue)
+        private string FindRequiredValue(IReadOnlyDictionary<string, string?> customFields, string label, List<string> missingRequiredFields)
+        {
+            if (customFields.TryGetValue(label, out var value) && value != null)
+                return value;
+
+            missingRequiredFields.Add(label);
+
+            return string.Empty;
+        }
+
+        private string? FindOptionalValue(IReadOnlyDictionary<string, string?> customFields, string label)
+        {
+            if (customFields.TryGetValue(label, out var value) && value != null)
+                return value;
+
+            return null;
+        }
+
+        public ActivationRequest? MapActivation(Issue issue)
         {
             var customFields = issue.CustomFields.ToDictionary(f => f.Name, f => f.Values?.FirstOrDefault());
-            bool isAnyFieldMissing = false;
-
-            string FindValue(string label, bool optional = false)
-            {
-                if (customFields.TryGetValue(label, out var value) && value != null)
-                    return value;
-
-                if (!optional)
-                {
-                    isAnyFieldMissing = true;
-                    log.LogWarning($"Jira ticket {issue.Key.Value} ignored, missing field {label}");
-                }
-
-                return string.Empty;
-            }
+            var missingRequiredFields = new List<string>();
 
             var request = new ActivationRequest
             {
                 Id = issue.Key.Value,
-                FirstName = FindValue("Name"),
-                LastName = FindValue("Surname"),
-                MembershipNumber = FindValue("Member ID (reporter)"),
-                FirstLevelUnit = FindValue("Hufiec", optional: true),
-                SecondLevelUnit = FindValue("Chorągiew"),
+                FirstName = FindRequiredValue(customFields, "Name", missingRequiredFields),
+                LastName = FindRequiredValue(customFields, "Surname", missingRequiredFields),
+                MembershipNumber = FindRequiredValue(customFields, "Member ID (reporter)", missingRequiredFields),
+                FirstLevelUnit = FindOptionalValue(customFields, "Hufiec"),
+                SecondLevelUnit = FindRequiredValue(customFields, "Chorągiew", missingRequiredFields),
             };
 
             // todo this should be set on input form
@@ -58,7 +66,30 @@ namespace Zhp.Office.AccountManagement.Adapters.TicketSystem
                 !request.SecondLevelUnit.Contains("Chorągiew"))
                 request.SecondLevelUnit = $"Chorągiew {request.SecondLevelUnit}";
 
-            return isAnyFieldMissing ? null : request;
+            if (missingRequiredFields.Any())
+                log.LogWarning($"Ignoring ticket {issue.Key.Value}, missing fields: {string.Join(", ", missingRequiredFields)}");
+
+            return missingRequiredFields.Any() ? null : request;
+        }
+
+        public PasswordResetRequest? MapPasswordReset(Issue issue)
+        {
+            var customFields = issue.CustomFields.ToDictionary(f => f.Name, f => f.Values?.FirstOrDefault());
+            var mailString = FindOptionalValue(customFields, "todo");
+
+            try
+            {
+                var mail = new MailAddress(mailString); // todo use MailAddress.TryCreate on .NET 5
+                return new PasswordResetRequest
+                {
+                    Id = issue.Key.Value,
+                    MailAddress = mail
+                };
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Zhp.Office.AccountManagement.Model
+namespace Zhp.Office.AccountManagement.Model
 {
     public class ActivationRequest
     {
@@ -11,7 +11,7 @@
         /// <summary>
         /// Full name - "Hufiec Sopot", "Chorągiew Stołeczna" or "Główna Kwatera ZHP"
         /// </summary>
-        public string FirstLevelUnit { get; set; } = string.Empty;
+        public string? FirstLevelUnit { get; set; } = string.Empty;
 
         /// <summary>
         /// Full name - "Chorągiew Stołeczna" or "Główna Kwatera ZHP"

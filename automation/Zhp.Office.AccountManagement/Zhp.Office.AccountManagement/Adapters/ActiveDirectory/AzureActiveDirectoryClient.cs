@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
 using System;
 using System.Linq;
@@ -24,6 +24,13 @@ namespace Zhp.Office.AccountManagement.Adapters.ActiveDirectory
             this.logger = logger;
             enableChanges = config.EnableChanges;
             activeDirectoryConfig = config.ActiveDirectory;
+        }
+
+        public async Task ResetPassword(MailAddress email, string password, CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+
+            throw new NotImplementedException();
         }
 
         public async ValueTask<bool> TryAddUser(ActivationRequest request, MailAddress email, string password, CancellationToken token)

@@ -10,6 +10,8 @@ namespace Zhp.Office.AccountManagement.Domain.Services
     public interface ICommentFormatter
     {
         string GetMailCreatedComment(MailAddress mail, string password, ActivationRequest request);
+
+        string GetPasswordResetComment(MailAddress mail, string password);
     }
 
     public class CommentFormatter : ICommentFormatter
@@ -41,8 +43,14 @@ namespace Zhp.Office.AccountManagement.Domain.Services
                 "AccountCreated",
                 ("login", mail.ToString()),
                 ("password", password),
-                ("firstLevelUnit", request.FirstLevelUnit),
+                ("firstLevelUnit", request.FirstLevelUnit ?? string.Empty),
                 ("secondLevelUnit", request.SecondLevelUnit),
                 ("membershipNumber", request.MembershipNumber));
+
+        public string GetPasswordResetComment(MailAddress mail, string password)
+            => GetComment(
+                "PasswordReset",
+                ("mail", mail.ToString()),
+                ("password", password));
     }
 }

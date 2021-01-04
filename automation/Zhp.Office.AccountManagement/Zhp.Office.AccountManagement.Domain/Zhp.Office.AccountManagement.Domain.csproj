@@ -11,7 +11,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<EmbeddedResource Include="CommentTemplates/*.txt"/>
+		<EmbeddedResource Include="CommentTemplates/*.txt" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="CommentTemplates\PasswordReset.txt" />
 	</ItemGroup>
 
 </Project>

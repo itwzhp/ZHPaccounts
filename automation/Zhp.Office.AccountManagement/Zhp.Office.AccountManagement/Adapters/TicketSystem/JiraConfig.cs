@@ -1,4 +1,4 @@
-﻿namespace Zhp.Office.AccountManagement.Adapters.TicketSystem
+namespace Zhp.Office.AccountManagement.Adapters.TicketSystem
 {
     public class JiraConfig
     {
@@ -16,6 +16,8 @@
         public class QueriesType
         {
             public string ApprovedActivationsTicket { get; private set; } = string.Empty;
+
+            public string ApprovedPasswordResetTicket { get; private set; } = string.Empty;
         }
 
         public class WorkflowsType

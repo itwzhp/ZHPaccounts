@@ -1,4 +1,4 @@
-﻿using Atlassian.Jira;
+using Atlassian.Jira;
 using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -20,7 +20,8 @@ namespace Zhp.Office.AccountManagement.Adapters.TicketSystem
         private readonly bool enableChanges;
         private readonly JiraConfig jiraConfig;
 
-        private bool wereSomeRequestsAlreadyReturned = false;
+        private bool wereSomeActivationRequestsAlreadyReturned = false;
+        private bool wereSomePasswordResetRequestsAlreadyReturned = false;
 
         public JiraTicketRepository(Jira jiraClient, FunctionConfig config, ILogger<JiraTicketRepository> log, IJiraRequestMapper mapper)
         {
@@ -34,18 +35,36 @@ namespace Zhp.Office.AccountManagement.Adapters.TicketSystem
         public async Task<IReadOnlyCollection<ActivationRequest>> GetApprovedActivationRequests(CancellationToken token)
         {
             // if we are in debug mode, don't return the same data on subsequent calls
-            if (!enableChanges && wereSomeRequestsAlreadyReturned)
+            if (!enableChanges && wereSomeActivationRequestsAlreadyReturned)
                 return new ActivationRequest[0];
 
-            var results = (await jiraClient.Issues.GetIssuesFromJqlAsync(new IssueSearchOptions(jiraConfig.Queries.ApprovedActivationsTicket)
+            var results = await GetTickets(jiraConfig.Queries.ApprovedActivationsTicket, token);
+
+            wereSomeActivationRequestsAlreadyReturned = true;
+            return results.Select(mapper.MapActivation).OfType<ActivationRequest>().ToList();
+        }
+
+        public async Task<IReadOnlyCollection<PasswordResetRequest>> GetApprovedPasswordResetRequests(CancellationToken token)
+        {
+            // if we are in debug mode, don't return the same data on subsequent calls
+            if (!enableChanges && wereSomePasswordResetRequestsAlreadyReturned)
+                return new PasswordResetRequest[0];
+
+            var results = await GetTickets(jiraConfig.Queries.ApprovedPasswordResetTicket, token);
+
+            wereSomePasswordResetRequestsAlreadyReturned = true;
+            return results.Select(mapper.MapPasswordReset).OfType<PasswordResetRequest>().ToList();
+        }
+
+        private async Task<IReadOnlyCollection<Issue>> GetTickets(string jqlQuery, CancellationToken token)
+        {
+            var results = (await jiraClient.Issues.GetIssuesFromJqlAsync(new IssueSearchOptions(jqlQuery)
             {
                 MaxIssuesPerRequest = jiraConfig.JiraQueryBatchSize
             }, token)).ToList();
 
             results.ForEach(r => cache.TryAdd(r.Key.Value, r));
-
-            wereSomeRequestsAlreadyReturned = true;
-            return results.Select(mapper.Map).OfType<ActivationRequest>().ToList();
+            return results;
         }
 
         public async Task MarkAsDone(string id, string? comment, CancellationToken token)
