@@ -49,10 +49,12 @@ namespace Zhp.Office.AccountManagement.Domain.Services
                 var (validTickets, duplicates) = FindDuplicates(tickets);
                 logger.LogInformation($"Found {duplicates.Count} duplicated requests.");
 
-                var tasks = validTickets.Select(t => HandleTicket(t, token))
-                    .Concat(duplicates.Select(t => HandleDuplicate(t, token)));
+                foreach (var duplicate in duplicates)
+                    await HandleDuplicate(duplicate, token);
 
-                await Task.WhenAll(tasks.ToList());
+                foreach (var ticket in validTickets)
+                    await HandleTicket(ticket, token);
+
                 logger.LogInformation($"Batch finished");
             } while (tickets.Any());
         }
@@ -84,7 +86,7 @@ namespace Zhp.Office.AccountManagement.Domain.Services
                 var comment = commentFormatter.GetMailCreatedComment(addedMailAddress, password, ticket);
                 await ticketRepository.MarkAsDone(ticket.Id, comment);
             }
-            catch (OperationCanceledException) when (token.IsCancellationRequested) { }
+            catch (OperationCanceledException) when (token.IsCancellationRequested) { throw; }
             catch (Exception ex)
             {
                 logger.LogError(ex, $"Unable to create account for {ticket.Id}");
