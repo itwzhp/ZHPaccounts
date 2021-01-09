@@ -1,5 +1,6 @@
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Zhp.Office.AccountManagement.Domain.Services;
@@ -20,9 +21,16 @@ namespace Zhp.Office.AccountManagement.Functions
         [FunctionName("CreateAccounts")]
         public async Task Run([TimerTrigger("0 17 3 * * *", RunOnStartup = false)] TimerInfo myTimer, CancellationToken token)
         {
-            log.LogInformation("Running function CreateAccounts...");
-            await service.CreateAccounts(token);
-            log.LogInformation("Function CreateAccounts finished.");
+            try
+            {
+                log.LogInformation("Running function CreateAccounts...");
+                await service.CreateAccounts(token);
+                log.LogInformation("Function CreateAccounts finished.");
+            }
+            catch (Exception ex)
+            {
+                log.LogError(ex, "Cought error during CreateAccounts");
+            }
         }
     }
 }
