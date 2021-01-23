@@ -42,6 +42,8 @@ namespace Zhp.Office.AccountManagement.Adapters.ActiveDirectory
                 .Filter($"{nameof(User.UserPrincipalName)} eq '{email}'")
                 .GetAsync(token);
 
+            logger.LogDebug($"Checking for existing users - found {existingUser.Count}");
+
             if (existingUser.Count > 0)
                 return false;
 
@@ -77,8 +79,13 @@ namespace Zhp.Office.AccountManagement.Adapters.ActiveDirectory
 
             token.ThrowIfCancellationRequested();
 
+            logger.LogDebug($"Adding user {email}...");
             user = await client.Users.Request().AddAsync(user);
+
+            logger.LogDebug($"Assigning license to user {email}...");
             await client.Users[user.Id].AssignLicense(licenses, Enumerable.Empty<Guid>()).Request().PostAsync();
+
+            logger.LogDebug($"Adding user {email} finished.");
             return true;
         }
     }

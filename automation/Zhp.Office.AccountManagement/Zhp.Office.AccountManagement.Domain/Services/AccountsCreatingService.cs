@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using System.Threading;
 using System.Threading.Tasks;
 using Zhp.Office.AccountManagement.Domain.Ports;
@@ -49,10 +50,12 @@ namespace Zhp.Office.AccountManagement.Domain.Services
                 var (validTickets, duplicates) = FindDuplicates(tickets);
                 logger.LogInformation($"Found {duplicates.Count} duplicated requests.");
 
-                var tasks = validTickets.Select(t => HandleTicket(t, token))
-                    .Concat(duplicates.Select(t => HandleDuplicate(t, token)));
+                foreach (var duplicate in duplicates)
+                    await HandleDuplicate(duplicate, token);
 
-                await Task.WhenAll(tasks.ToList());
+                foreach (var ticket in validTickets)
+                    await HandleTicket(ticket, token);
+
                 logger.LogInformation($"Batch finished");
             } while (tickets.Any());
         }
@@ -74,9 +77,15 @@ namespace Zhp.Office.AccountManagement.Domain.Services
                 var possibleMails = mailAddressGenerator.GetPossibleAddressesForUser(ticket.FirstName, ticket.LastName);
                 var password = passwordGenerator.GeneratePassword();
 
-                var addedMailAddress = await possibleMails.ToAsyncEnumerable()
-                    .FirstOrDefaultAwaitAsync(
-                        mail => accountManager.TryAddUser(ticket, mail, password, token));
+                MailAddress? addedMailAddress = null;
+                foreach (var mail in possibleMails)
+                {
+                    if(await accountManager.TryAddUser(ticket, mail, password, token))
+                    {
+                        addedMailAddress = mail;
+                        break;
+                    }
+                }
 
                 if (addedMailAddress == null)
                     throw new Exception("Unknown error, unable to create user");
@@ -84,7 +93,7 @@ namespace Zhp.Office.AccountManagement.Domain.Services
                 var comment = commentFormatter.GetMailCreatedComment(addedMailAddress, password, ticket);
                 await ticketRepository.MarkAsDone(ticket.Id, comment);
             }
-            catch (OperationCanceledException) when (token.IsCancellationRequested) { }
+            catch (OperationCanceledException) when (token.IsCancellationRequested) { throw; }
             catch (Exception ex)
             {
                 logger.LogError(ex, $"Unable to create account for {ticket.Id}");
