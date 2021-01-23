@@ -1,5 +1,6 @@
 using Atlassian.Jira;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -71,7 +72,21 @@ namespace Zhp.Office.AccountManagement.Adapters.TicketSystem
             => await RunWorkflow(id, jiraConfig.Workflows.MarkAsDone.ToString(), comment, token);
 
         public async Task MarkForManualReview(string id, string? comment, CancellationToken token)
-            => await RunWorkflow(id, jiraConfig.Workflows.MarkForManualReview.ToString(), comment, token);
+        {
+            if(comment != null)
+                await AddComment(id, comment, token);
+
+            await RunWorkflow(id, jiraConfig.Workflows.MarkForManualReview.ToString(), comment, token);
+        }
+
+        private async Task AddComment(string id, string comment, CancellationToken token)
+        {
+            var issue = cache.TryGetValue(id, out var item)
+               ? item
+               : await jiraClient.Issues.GetIssueAsync(id, token);
+
+            await issue.AddCommentAsync(comment, token);
+        }
 
         private async Task RunWorkflow(string issueId, string workflowId, string? comment, CancellationToken token)
         {
