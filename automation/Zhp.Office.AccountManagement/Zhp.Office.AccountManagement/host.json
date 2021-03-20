@@ -12,5 +12,6 @@
             "default": "Information",
             "Microsoft.Graph": "Information"
         }
-    }
+    },
+    "functionTimeout": "00:03:00"
 }

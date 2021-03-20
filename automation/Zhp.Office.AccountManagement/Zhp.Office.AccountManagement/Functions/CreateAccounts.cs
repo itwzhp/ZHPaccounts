@@ -19,6 +19,7 @@ namespace Zhp.Office.AccountManagement.Functions
         }
 
         [FunctionName("CreateAccounts")]
+        [FixedDelayRetry(3, "00:01:10")]
         public async Task Run([TimerTrigger("0 17 3 * * *", RunOnStartup = false)] TimerInfo myTimer, CancellationToken token)
         {
             try

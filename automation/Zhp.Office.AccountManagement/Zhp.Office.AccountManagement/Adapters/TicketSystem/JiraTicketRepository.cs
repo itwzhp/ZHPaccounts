@@ -1,4 +1,4 @@
-﻿using Atlassian.Jira;
+using Atlassian.Jira;
 using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -47,22 +47,27 @@ namespace Zhp.Office.AccountManagement.Adapters.TicketSystem
             wereSomeRequestsAlreadyReturned = true;
             return results.Select(mapper.Map).OfType<ActivationRequest>().ToList();
         }
+        private async ValueTask<Issue> GetIssue(string id, CancellationToken token)
+            => cache.TryGetValue(id, out var item)
+                ? item
+                : await jiraClient.Issues.GetIssueAsync(id, token);
 
         public async Task MarkAsDone(string id, string? comment, CancellationToken token)
-            => await RunWorkflow(id, jiraConfig.Workflows.MarkAsDone.ToString(), comment, token);
+            => await RunWorkflow(await GetIssue(id, token), jiraConfig.Workflows.MarkAsDone.ToString(), comment, token);
 
         public async Task MarkForManualReview(string id, string? comment, CancellationToken token)
-            => await RunWorkflow(id, jiraConfig.Workflows.MarkForManualReview.ToString(), comment, token);
-
-        private async Task RunWorkflow(string issueId, string workflowId, string? comment, CancellationToken token)
         {
-            var issue = cache.TryGetValue(issueId, out var item)
-                ? item
-                : await jiraClient.Issues.GetIssueAsync(issueId, token);
+            var issue = await GetIssue(id, token);
+            if(comment != null && enableChanges)
+                await issue.AddCommentAsync($"Niepowodzenie: {comment}", token);
+            await RunWorkflow(issue, jiraConfig.Workflows.MarkForManualReview.ToString(), comment, token);
+        }
 
+        private async Task RunWorkflow(Issue issue, string workflowId, string? comment, CancellationToken token)
+        {
             if (!enableChanges)
             {
-                log.LogInformation($"Jira sandbox mode: running workflow {workflowId} on issue {issueId}");
+                log.LogInformation($"Jira sandbox mode: running workflow {workflowId} on issue {issue.JiraIdentifier}");
                 return;
             }
 
@@ -71,7 +76,7 @@ namespace Zhp.Office.AccountManagement.Adapters.TicketSystem
                 Comment = comment
             }, token);
 
-            cache.Remove(issueId, out _);
+            cache.Remove(issue.JiraIdentifier, out _);
         }
     }
 }

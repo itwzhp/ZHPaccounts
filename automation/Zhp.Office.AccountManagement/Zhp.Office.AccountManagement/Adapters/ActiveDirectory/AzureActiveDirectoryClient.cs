@@ -30,12 +30,14 @@ namespace Zhp.Office.AccountManagement.Adapters.ActiveDirectory
         {
             token.ThrowIfCancellationRequested();
 
+            logger.LogDebug($"Checking for existing users with name {email}...");
+
             var existingUser = await client.Users.Request()
                 .Select(nameof(User.UserPrincipalName))
                 .Filter($"{nameof(User.UserPrincipalName)} eq '{email}'")
                 .GetAsync(token);
 
-            logger.LogDebug($"Checking for existing users - found {existingUser.Count}");
+            logger.LogDebug($"Found {existingUser.Count}.");
 
             if (existingUser.Count > 0)
                 return false;
