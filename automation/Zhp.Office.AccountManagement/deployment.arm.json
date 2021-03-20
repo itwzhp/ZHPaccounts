@@ -61,7 +61,7 @@
             },
             "properties": {
                 "ApplicationId": "[variables('applicationInsightsName')]",
-                "Request_Source": "IbizaWebAppExtensionCreate"
+                "Request_Source": "IbizaWebAppExtensionCreate" //todo remove?
             }
         },
         {

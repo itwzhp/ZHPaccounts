@@ -74,8 +74,12 @@ namespace Zhp.Office.AccountManagement.Domain.Services
         {
             try
             {
+                logger.LogDebug($"Handling ticket {ticket.Id}...");
                 var possibleMails = mailAddressGenerator.GetPossibleAddressesForUser(ticket.FirstName, ticket.LastName);
+                logger.LogDebug($"Addresses generated.");
+
                 var password = passwordGenerator.GeneratePassword();
+                logger.LogDebug($"Password generated.");
 
                 MailAddress? addedMailAddress = null;
                 foreach (var mail in possibleMails)
