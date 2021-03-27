@@ -58,8 +58,11 @@ namespace Zhp.Office.AccountManagement.Adapters.TicketSystem
         public async Task MarkForManualReview(string id, string? comment, CancellationToken token)
         {
             var issue = await GetIssue(id, token);
-            if(comment != null && enableChanges)
-                await issue.AddCommentAsync($"Niepowodzenie: {comment}", token);
+            log.LogInformation($"Marking issue {id} to manual review: {comment}");
+
+            // adding comments to Jira doesn't work
+            // if(comment != null && enableChanges)
+            //    await issue.AddCommentAsync($"Niepowodzenie: {comment}", token);
             await RunWorkflow(issue, jiraConfig.Workflows.MarkForManualReview.ToString(), comment, token);
         }
 
