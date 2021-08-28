@@ -1,4 +1,4 @@
-using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
@@ -18,8 +18,8 @@ namespace Zhp.Office.AccountManagement.Functions
             this.log = log;
         }
 
-        [FunctionName("CreateAccounts")]
-        [FixedDelayRetry(3, "00:01:10")]
+        [Function("CreateAccounts")]
+        //TODO [FixedDelayRetry(3, "00:01:10")]
         public async Task Run([TimerTrigger("0 17 3 * * *", RunOnStartup = false)] TimerInfo myTimer, CancellationToken token)
         {
             try

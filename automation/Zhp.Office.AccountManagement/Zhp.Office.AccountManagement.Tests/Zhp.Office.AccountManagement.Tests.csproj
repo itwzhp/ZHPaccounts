@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>netcoreapp3.1</TargetFramework>
+		<TargetFramework>net5.0</TargetFramework>
 
 		<IsPackable>false</IsPackable>
 	</PropertyGroup>
@@ -24,6 +24,11 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Zhp.Office.AccountManagement.Domain\Zhp.Office.AccountManagement.Domain.csproj" />
+		<ProjectReference Include="..\Zhp.Office.AccountManagement\Zhp.Office.AccountManagement.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+        <EmbeddedResource Include="Adapters\ActiveDirectory\TestReport.csv" />
 	</ItemGroup>
 
 </Project>
