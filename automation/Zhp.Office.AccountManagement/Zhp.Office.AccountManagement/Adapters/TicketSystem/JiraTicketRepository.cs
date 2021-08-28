@@ -1,5 +1,6 @@
 using Atlassian.Jira;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace Zhp.Office.AccountManagement.Adapters.TicketSystem
 {
     internal class JiraTicketRepository : ITicketRepository
     {
-        private static readonly ConcurrentDictionary<string, Issue> cache = new ConcurrentDictionary<string, Issue>();
+        private static readonly ConcurrentDictionary<string, Issue> cache = new();
         private readonly Jira jiraClient;
         private readonly ILogger<JiraTicketRepository> log;
         private readonly IJiraRequestMapper mapper;
@@ -35,7 +36,7 @@ namespace Zhp.Office.AccountManagement.Adapters.TicketSystem
         {
             // if we are in debug mode, don't return the same data on subsequent calls
             if (!enableChanges && wereSomeRequestsAlreadyReturned)
-                return new ActivationRequest[0];
+                return Array.Empty<ActivationRequest>();
 
             var results = (await jiraClient.Issues.GetIssuesFromJqlAsync(new IssueSearchOptions(jiraConfig.Queries.ApprovedActivationsTicket)
             {

@@ -13,17 +13,34 @@ namespace Zhp.Office.AccountManagement.Adapters.ActiveDirectory
 {
     public class AzureActiveDirectoryClient : IAccountManager
     {
-        private readonly IGraphServiceClient client;
+        private readonly GraphServiceClient client;
         private readonly ILogger<AzureActiveDirectoryClient> logger;
         private readonly bool enableChanges;
         private readonly ActiveDirectoryConfig activeDirectoryConfig;
 
-        public AzureActiveDirectoryClient(IGraphServiceClient client, FunctionConfig config, ILogger<AzureActiveDirectoryClient> logger)
+        public AzureActiveDirectoryClient(GraphServiceClient client, FunctionConfig config, ILogger<AzureActiveDirectoryClient> logger)
         {
             this.client = client;
             this.logger = logger;
             enableChanges = config.EnableChanges;
             activeDirectoryConfig = config.ActiveDirectory;
+        }
+
+        public async Task TakeAwayLicense(MailAddress email, CancellationToken token)
+        {
+            var licensesToRemove = activeDirectoryConfig.OtherRemovableLicenses.Append(activeDirectoryConfig.DefaultLicenseSku);
+
+            if (!enableChanges)
+            {
+                logger.LogInformation($"Sandbox graphAPI: Removing licences from {email}: {string.Join(", ", licensesToRemove)}");
+                return;
+            }
+
+            logger.LogDebug($"Removing licence from {email}...");
+            await client.Users[email.ToString()]
+                .AssignLicense(Enumerable.Empty<AssignedLicense>(), licensesToRemove)
+                .Request().PostAsync(token);
+            logger.LogDebug($"Removed licence from {email}.");
         }
 
         public async ValueTask<bool> TryAddUser(ActivationRequest request, MailAddress email, string password, CancellationToken token)
@@ -70,15 +87,15 @@ namespace Zhp.Office.AccountManagement.Adapters.ActiveDirectory
                 UsageLocation = "PL",
             };
 
-            var licenses = new[] { new AssignedLicense { SkuId = new Guid(activeDirectoryConfig.DefaultLicenseSku) } };
+            var licenses = new[] { new AssignedLicense { SkuId = activeDirectoryConfig.DefaultLicenseSku } };
 
             token.ThrowIfCancellationRequested();
 
             logger.LogDebug($"Adding user {email}...");
-            user = await client.Users.Request().AddAsync(user);
+            user = await client.Users.Request().AddAsync(user, CancellationToken.None);
 
             logger.LogDebug($"Assigning license to user {email}...");
-            await client.Users[user.Id].AssignLicense(licenses, Enumerable.Empty<Guid>()).Request().PostAsync();
+            await client.Users[user.Id].AssignLicense(licenses, Enumerable.Empty<Guid>()).Request().PostAsync(CancellationToken.None);
 
             logger.LogDebug($"Adding user {email} finished.");
             return true;

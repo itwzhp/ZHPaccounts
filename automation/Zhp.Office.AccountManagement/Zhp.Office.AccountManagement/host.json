@@ -13,5 +13,5 @@
             "Microsoft.Graph": "Information"
         }
     },
-    "functionTimeout": "00:03:00"
+    "functionTimeout": "00:05:00"
 }
