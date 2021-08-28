@@ -18,8 +18,7 @@ namespace Zhp.Office.AccountManagement.Functions
         }
 
         [Function("TakeAwayUnusedLicenses")]
-        // DO NOT MERGE RunOnStartup
-        public async Task Run([TimerTrigger("0 37 1 1 * *", RunOnStartup = true)] TimerInfo myTimer, CancellationToken token)
+        public async Task Run([TimerTrigger("0 37 1 1 * *", RunOnStartup = false)] TimerInfo myTimer, CancellationToken token)
             => await cleaner.CleanOldAccounts(daysThreshold, token);
     }
 }
