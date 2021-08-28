@@ -78,7 +78,7 @@
             "properties": {
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('servicePlanName'))]",
                 "siteConfig": {
-                    "linuxFxVersion": "DOTNET|3.1",
+                    "linuxFxVersion": "DOTNET-ISOLATED|5.0",
                     "appSettings": [
                         {
                             "name": "AzureWebJobsStorage",
@@ -116,6 +116,10 @@
                         {
                             "name": "EnableChanges",
                             "value": "true"
+                        },
+                        {
+                            "name": "AZURE_FUNCTIONS_ENVIRONMENT",
+                            "value": "Production"
                         }
                     ]
                 }
