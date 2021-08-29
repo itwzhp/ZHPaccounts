@@ -33,7 +33,7 @@ namespace Zhp.Office.AccountManagement.Adapters.ActiveDirectory
             await foreach(var record in recordsWithLicenses)
             {
                 if(MailAddress.TryCreate(record.UserPrincipalName, out var mail))
-                    yield return new(mail, record.LastActivity);
+                    yield return new(mail, record.LastActivity, record.LastLicenseAssign);
             }
         }
     }

@@ -29,15 +29,23 @@ namespace Zhp.Office.AccountManagement.Tests.Adapters.ActiveDirectory
         [Fact]
         public void ReportEntryLastActivity_CountsProperly()
         {
-            var record = new CsvReportParser.ReportEntry
-            {
-                ExchangeLastActivityDate = null,
-                OneDriveLastActivityDate = new DateTime(2010, 04, 08),
-                SkypeLastActivityDate = new DateTime(2008, 04, 08),
-                SharePointLastActivityDate = new DateTime(2013, 04, 08),
-                YammerLastActivityDate = null,
-                TeamsLastActivityDate = null,
-            };
+            var record = new CsvReportParser.ReportEntry(
+                UserPrincipalName: "aa@bb.pl",
+                AssignedProducts: string.Empty,
+
+                ExchangeLastActivityDate: null,
+                OneDriveLastActivityDate: new DateTime(2010, 04, 08),
+                SkypeLastActivityDate: new DateTime(2008, 04, 08),
+                SharePointLastActivityDate: new DateTime(2013, 04, 08),
+                YammerLastActivityDate: null,
+                TeamsLastActivityDate: null,
+
+                ExchangeLicenseAssignDate: null,
+                OneDriveLicenseAssignDate: null,
+                SkypeLicenseAssignDate: null,
+                SharePointLicenseAssignDate: null,
+                YammerLicenseAssignDate: null,
+                TeamsLicenseAssignDate: null);
 
             record.LastActivity.Should().Be(record.SharePointLastActivityDate);
         }

@@ -23,24 +23,23 @@ namespace Zhp.Office.AccountManagement.Adapters.ActiveDirectory
             }
         }
 
-        public class ReportEntry
+        public record ReportEntry(
+            string UserPrincipalName,
+            string AssignedProducts,
+            DateTime? ExchangeLastActivityDate,
+            DateTime? OneDriveLastActivityDate,
+            DateTime? SharePointLastActivityDate,
+            DateTime? SkypeLastActivityDate,
+            DateTime? YammerLastActivityDate,
+            DateTime? TeamsLastActivityDate,
+
+            DateTime? ExchangeLicenseAssignDate,
+            DateTime? OneDriveLicenseAssignDate,
+            DateTime? SharePointLicenseAssignDate,
+            DateTime? SkypeLicenseAssignDate,
+            DateTime? YammerLicenseAssignDate,
+            DateTime? TeamsLicenseAssignDate)
         {
-            public string UserPrincipalName { get; set; } = string.Empty;
-
-            public string AssignedProducts { get; set; } = string.Empty;
-
-            public DateTime? ExchangeLastActivityDate { get; set; }
-
-            public DateTime? OneDriveLastActivityDate { get; set; }
-
-            public DateTime? SharePointLastActivityDate { get; set; }
-
-            public DateTime? SkypeLastActivityDate { get; set; }
-
-            public DateTime? YammerLastActivityDate { get; set; }
-
-            public DateTime? TeamsLastActivityDate { get; set; }
-
             public DateTime? LastActivity
                 => new[]
                 {
@@ -52,21 +51,40 @@ namespace Zhp.Office.AccountManagement.Adapters.ActiveDirectory
                     TeamsLastActivityDate
                 }
                 .Aggregate((d1, d2) => d1 > d2 || !d2.HasValue ? d1 : d2);
+
+            public DateTime? LastLicenseAssign
+                => new[]
+                {
+                    ExchangeLicenseAssignDate,
+                    OneDriveLicenseAssignDate,
+                    SharePointLicenseAssignDate,
+                    SkypeLicenseAssignDate,
+                    YammerLicenseAssignDate,
+                    TeamsLicenseAssignDate
+                }
+                .Aggregate((d1, d2) => d1 > d2 || !d2.HasValue ? d1 : d2);
         }
 
         private class ReportEntryMap : ClassMap<ReportEntry>
         {
             public ReportEntryMap()
             {
-                Map(r => r.UserPrincipalName).Name("User Principal Name");
-                Map(r => r.AssignedProducts).Name("Assigned Products");
+                Parameter(nameof(ReportEntry.UserPrincipalName)).Name("User Principal Name");
+                Parameter(nameof(ReportEntry.AssignedProducts)).Name("Assigned Products");
 
-                Map(r => r.ExchangeLastActivityDate).Name("Exchange Last Activity Date");
-                Map(r => r.OneDriveLastActivityDate).Name("OneDrive Last Activity Date");
-                Map(r => r.SharePointLastActivityDate).Name("SharePoint Last Activity Date");
-                Map(r => r.SkypeLastActivityDate).Name("Skype For Business Last Activity Date");
-                Map(r => r.YammerLastActivityDate).Name("Yammer Last Activity Date");
-                Map(r => r.TeamsLastActivityDate).Name("Teams Last Activity Date");
+                Parameter(nameof(ReportEntry.ExchangeLastActivityDate)).Name("Exchange Last Activity Date");
+                Parameter(nameof(ReportEntry.OneDriveLastActivityDate)).Name("OneDrive Last Activity Date");
+                Parameter(nameof(ReportEntry.SharePointLastActivityDate)).Name("SharePoint Last Activity Date");
+                Parameter(nameof(ReportEntry.SkypeLastActivityDate)).Name("Skype For Business Last Activity Date");
+                Parameter(nameof(ReportEntry.YammerLastActivityDate)).Name("Yammer Last Activity Date");
+                Parameter(nameof(ReportEntry.TeamsLastActivityDate)).Name("Teams Last Activity Date");
+
+                Parameter(nameof(ReportEntry.ExchangeLicenseAssignDate)).Name("Exchange License Assign Date");
+                Parameter(nameof(ReportEntry.OneDriveLicenseAssignDate)).Name("OneDrive License Assign Date");
+                Parameter(nameof(ReportEntry.SharePointLicenseAssignDate)).Name("SharePoint License Assign Date");
+                Parameter(nameof(ReportEntry.SkypeLicenseAssignDate)).Name("Skype For Business License Assign Date");
+                Parameter(nameof(ReportEntry.YammerLicenseAssignDate)).Name("Yammer License Assign Date");
+                Parameter(nameof(ReportEntry.TeamsLicenseAssignDate)).Name("Teams License Assign Date");
 
                 Map(r => r.LastActivity).Ignore();
             }

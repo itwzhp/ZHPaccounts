@@ -22,9 +22,12 @@ namespace Zhp.Office.AccountManagement.Domain.Services
 
         public async Task CleanOldAccounts(uint thresholdInDays, CancellationToken token)
         {
-            var utcDateThreshold = DateTime.UtcNow.Date.AddDays(-thresholdInDays);
+            var lastUsageThreshold = DateTime.UtcNow.Date.AddDays(-thresholdInDays);
+            var freshAccoundThreshold = DateTime.UtcNow.Date.AddDays(-60); 
+
             var oldAccounts = await lastUsageRepo.FindLastActivity(token)
-                .Where(r => r.LastUsage == null || r.LastUsage < utcDateThreshold)
+                .Where(r => r.LastUsage == null || r.LastUsage < lastUsageThreshold)
+                .Where(r => r.LicenseAssignDate != null && r.LicenseAssignDate < freshAccoundThreshold)
                 .ToListAsync(token);
 
             logger.LogInformation($"Staring cleaning {oldAccounts.Count} accounts");
