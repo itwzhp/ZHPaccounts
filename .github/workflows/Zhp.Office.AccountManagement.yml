@@ -31,7 +31,7 @@ jobs:
       uses: azure/arm-deploy@v1
       with:
         deploymentMode: Validate
-        subscriptionId: 69111246-db23-463c-82b2-7815ed5f8a1a
+        subscriptionId: 35e22786-93ea-47c8-902a-16e9d0f03e17
         resourceGroupName: office-accountmanagement
         template: automation/Zhp.Office.AccountManagement/deployment.arm.json
         parameters: JiraPassword='${{ secrets.JIRA_API_PASSWORD }}' ActiveDirectoryCertBase64='${{ secrets.AAD_APP_CERTIFICATE }}' ActiveDirectoryCertPassword='${{ secrets.AAD_APP_CERTIFICATE_PASSWORD }}'
@@ -67,7 +67,7 @@ jobs:
       uses: azure/arm-deploy@v1
       with:
         deploymentMode: Complete
-        subscriptionId: 69111246-db23-463c-82b2-7815ed5f8a1a
+        subscriptionId: 35e22786-93ea-47c8-902a-16e9d0f03e17
         resourceGroupName: office-accountmanagement
         template: deployment.arm.json
         parameters: JiraPassword=${{ secrets.JIRA_API_PASSWORD }} ActiveDirectoryCertBase64=${{ secrets.AAD_APP_CERTIFICATE }} ActiveDirectoryCertPassword=${{ secrets.AAD_APP_CERTIFICATE_PASSWORD }}
