@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Threading;
@@ -26,21 +27,19 @@ namespace Zhp.Office.AccountManagement.Adapters.ActiveDirectory
             activeDirectoryConfig = config.ActiveDirectory;
         }
 
-        public async Task TakeAwayLicense(MailAddress email, CancellationToken token)
+        public async Task TakeAwayLicense(MailAddress email, IEnumerable<Guid> licenses,CancellationToken token)
         {
-            var licensesToRemove = activeDirectoryConfig.OtherRemovableLicenses.Append(activeDirectoryConfig.DefaultLicenseSku);
-
             if (!enableChanges)
             {
-                logger.LogInformation($"Sandbox graphAPI: Removing licences from {email}: {string.Join(", ", licensesToRemove)}");
+                logger.LogInformation($"Sandbox graphAPI: Removing licences from {email}: {string.Join(", ", licenses)}");
                 return;
             }
 
-            logger.LogDebug($"Removing licence from {email}...");
+            logger.LogInformation($"Removing licence from {email}...");
             await client.Users[email.ToString()]
-                .AssignLicense(Enumerable.Empty<AssignedLicense>(), licensesToRemove)
+                .AssignLicense(Enumerable.Empty<AssignedLicense>(), licenses)
                 .Request().PostAsync(token);
-            logger.LogDebug($"Removed licence from {email}.");
+            logger.LogInformation($"Removed licence from {email}.");
         }
 
         public async ValueTask<bool> TryAddUser(ActivationRequest request, MailAddress email, string password, CancellationToken token)

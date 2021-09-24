@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Net.Mail;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,6 +18,6 @@ namespace Zhp.Office.AccountManagement.Domain.Ports
         /// <summary>
         /// Removes all MS liceses from grant (ie. E3 and A1)
         /// </summary>
-        Task TakeAwayLicense(MailAddress email, CancellationToken token);
+        Task TakeAwayLicense(MailAddress email, IEnumerable<Guid> licenses, CancellationToken token);
     }
 }

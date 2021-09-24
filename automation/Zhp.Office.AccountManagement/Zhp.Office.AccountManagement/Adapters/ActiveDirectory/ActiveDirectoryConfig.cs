@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Zhp.Office.AccountManagement.Adapters.ActiveDirectory
 {
@@ -15,8 +16,6 @@ namespace Zhp.Office.AccountManagement.Adapters.ActiveDirectory
 
         public Guid DefaultLicenseSku { get; private set; }
 
-        public Guid[] OtherRemovableLicenses { get; private set; } = Array.Empty<Guid>();
-
-        public string[] RemovableLicensesNames { get; private set; } = Array.Empty<string>();
+        public Dictionary<string, Guid> RemovableLicenses { get; } = new();
     }
 }

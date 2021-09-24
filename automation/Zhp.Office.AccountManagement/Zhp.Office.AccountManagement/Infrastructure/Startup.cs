@@ -16,7 +16,7 @@ using Zhp.Office.AccountManagement.Domain.Services;
 
 namespace Zhp.Office.AccountManagement.Infrastructure
 {
-    internal static class Startup
+    public static class Startup
     {
         public static void Configure(IServiceCollection s)
         {
