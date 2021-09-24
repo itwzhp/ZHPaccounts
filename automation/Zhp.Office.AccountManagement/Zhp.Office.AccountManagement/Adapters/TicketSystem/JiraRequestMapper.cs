@@ -21,7 +21,7 @@ namespace Zhp.Office.AccountManagement.Adapters.TicketSystem
 
         public ActivationRequest? Map(Issue issue)
         {
-            var customFields = issue.CustomFields.ToDictionary(f => f.Name, f => f.Values?.FirstOrDefault());
+            var customFields = issue.CustomFields.GroupBy(f => f.Name).ToDictionary(f => f.Key, f => f.SelectMany(g => g.Values ?? Enumerable.Empty<string>()).FirstOrDefault());
             bool isAnyFieldMissing = false;
 
             string FindValue(string label, bool optional = false)
