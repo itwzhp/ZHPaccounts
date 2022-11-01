@@ -17,11 +17,11 @@ namespace Zhp.Office.AccountManagement.Domain.Services
             firstName = Clean(firstName);
             lastName = Clean(lastName);
 
-            yield return new MailAddress($"{firstName}.{lastName}@zhp.net.pl");
-            yield return new MailAddress($"{lastName}.{firstName}@zhp.net.pl");
-            yield return new MailAddress($"{firstName[0]}.{lastName}@zhp.net.pl");
+            yield return new MailAddress($"{firstName}.{lastName}@zhp.pl");
+            yield return new MailAddress($"{lastName}.{firstName}@zhp.pl");
+            yield return new MailAddress($"{firstName[0]}.{lastName}@zhp.pl");
             for (int i = 1; i <= 99; i++)
-                yield return new MailAddress($"{firstName}.{lastName}{i}@zhp.net.pl");
+                yield return new MailAddress($"{firstName}.{lastName}{i}@zhp.pl");
         }
 
         private static string Clean(string text)
