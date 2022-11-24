@@ -57,7 +57,7 @@ namespace Zhp.Office.AccountManagement.Infrastructure
             s.AddTransient<AccountsCreatingService>();
             s.AddSingleton(s => RandomNumberGenerator.Create());
 
-            IGraphServiceClient CreateGraphClient(IServiceProvider c)
+            GraphServiceClient CreateGraphClient(IServiceProvider c)
             {
                 var config = c.GetRequiredService<FunctionConfig>().ActiveDirectory;
                 IAuthenticationProvider provider;

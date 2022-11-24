@@ -13,12 +13,12 @@ namespace Zhp.Office.AccountManagement.Adapters.ActiveDirectory
 {
     public class AzureActiveDirectoryClient : IAccountManager
     {
-        private readonly IGraphServiceClient client;
+        private readonly GraphServiceClient client;
         private readonly ILogger<AzureActiveDirectoryClient> logger;
         private readonly bool enableChanges;
         private readonly ActiveDirectoryConfig activeDirectoryConfig;
 
-        public AzureActiveDirectoryClient(IGraphServiceClient client, FunctionConfig config, ILogger<AzureActiveDirectoryClient> logger)
+        public AzureActiveDirectoryClient(GraphServiceClient client, FunctionConfig config, ILogger<AzureActiveDirectoryClient> logger)
         {
             this.client = client;
             this.logger = logger;
