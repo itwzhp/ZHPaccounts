@@ -19,7 +19,9 @@ namespace Zhp.Office.AccountManagement.Domain.Services
         private static string GetTemplate(string name)
             => templateCache.GetOrAdd(name, n => {
                 var assembly = Assembly.GetExecutingAssembly();
-                using var resourceStream = assembly.GetManifestResourceStream($"Zhp.Office.AccountManagement.Domain.CommentTemplates.{n}.txt");
+                var fileName = $"Zhp.Office.AccountManagement.Domain.CommentTemplates.{n}.txt";
+                using var resourceStream = assembly.GetManifestResourceStream(fileName);
+                if (resourceStream == null) throw new FileNotFoundException("Comment template file not found", fileName);
                 using var reader = new StreamReader(resourceStream, Encoding.UTF8);
                 return reader.ReadToEnd();
             });

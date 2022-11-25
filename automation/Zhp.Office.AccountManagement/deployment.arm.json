@@ -78,7 +78,7 @@
             "properties": {
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('servicePlanName'))]",
                 "siteConfig": {
-                    "linuxFxVersion": "DOTNET|3.1",
+                    "linuxFxVersion": "DOTNET|6.0",
                     "appSettings": [
                         {
                             "name": "AzureWebJobsStorage",
@@ -95,7 +95,7 @@
                         },
                         {
                             "name": "FUNCTIONS_EXTENSION_VERSION",
-                            "value": "~3"
+                            "value": "~4"
                         },
                         {
                             "name": "Jira__User",
