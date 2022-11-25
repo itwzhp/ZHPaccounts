@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Zhp.Office.AccountManagement.Adapters.ActiveDirectory
 {
@@ -13,6 +14,8 @@ namespace Zhp.Office.AccountManagement.Adapters.ActiveDirectory
 
         public string ProdCertPassword { get; private set; } = string.Empty;
 
-        public string DefaultLicenseSku { get; private set; } = string.Empty;
+        public Guid DefaultLicenseSku { get; private set; }
+
+        public Dictionary<string, Guid> RemovableLicenses { get; } = new();
     }
 }

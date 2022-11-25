@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Net.Mail;
@@ -14,12 +15,13 @@ namespace Zhp.Office.AccountManagement.Domain.Services
 
     public class CommentFormatter : ICommentFormatter
     {
-        private static readonly ConcurrentDictionary<string, string> templateCache = new ConcurrentDictionary<string, string>();
+        private static readonly ConcurrentDictionary<string, string> templateCache = new();
 
         private static string GetTemplate(string name)
             => templateCache.GetOrAdd(name, n => {
                 var assembly = Assembly.GetExecutingAssembly();
-                using var resourceStream = assembly.GetManifestResourceStream($"Zhp.Office.AccountManagement.Domain.CommentTemplates.{n}.txt");
+                using var resourceStream = assembly.GetManifestResourceStream($"Zhp.Office.AccountManagement.Domain.CommentTemplates.{n}.txt")
+                ?? throw new Exception($"Can't find comment template for {n}");
                 using var reader = new StreamReader(resourceStream, Encoding.UTF8);
                 return reader.ReadToEnd();
             });

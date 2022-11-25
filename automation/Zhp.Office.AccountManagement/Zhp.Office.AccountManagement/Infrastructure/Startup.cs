@@ -1,13 +1,12 @@
 using Atlassian.Jira;
-using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
 using Microsoft.Graph.Auth;
 using Microsoft.Identity.Client;
 using System;
-using System.Reflection;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using Zhp.Office.AccountManagement.Adapters.ActiveDirectory;
@@ -17,30 +16,10 @@ using Zhp.Office.AccountManagement.Domain.Services;
 
 namespace Zhp.Office.AccountManagement.Infrastructure
 {
-    public class Startup : FunctionsStartup
+    public static class Startup
     {
-        public override void ConfigureAppConfiguration(IFunctionsConfigurationBuilder builder)
+        public static void Configure(IServiceCollection s)
         {
-            bool isDevelopmentEnvironment = builder.GetContext().EnvironmentName != "Production";
-
-            var b = builder.ConfigurationBuilder;
-
-            b.SetBasePath(builder.GetContext().ApplicationRootPath)
-                .AddJsonFile("appsettings.json", false, false);
-
-            if (isDevelopmentEnvironment)
-                b.AddUserSecrets(Assembly.GetExecutingAssembly(), false);
-
-            b.AddEnvironmentVariables();
-
-            base.ConfigureAppConfiguration(builder);
-        }
-
-        public override void Configure(IFunctionsHostBuilder builder)
-        {
-            bool isDevelopmentEnvironment = builder.GetContext().EnvironmentName != "Production";
-
-            var s = builder.Services;
 
             s.AddSingleton(CreateJiraClient);
             s.AddTransient<ITicketRepository, JiraTicketRepository>();
@@ -48,6 +27,7 @@ namespace Zhp.Office.AccountManagement.Infrastructure
 
             s.AddSingleton(CreateGraphClient);
             s.AddTransient<IAccountManager, AzureActiveDirectoryClient>();
+            s.AddTransient<ILastUsageRepository, AzureDirectoryLastUsageRepository>();
 
             s.AddSingleton(LoadConfig);
 
@@ -55,11 +35,13 @@ namespace Zhp.Office.AccountManagement.Infrastructure
             s.AddTransient<ICommentFormatter, CommentFormatter>();
             s.AddTransient<IMailAddressGenerator, MailAddressGenerator>();
             s.AddTransient<AccountsCreatingService>();
+            s.AddTransient<OldAccountCleaner>();
             s.AddSingleton(s => RandomNumberGenerator.Create());
 
-            IGraphServiceClient CreateGraphClient(IServiceProvider c)
+            GraphServiceClient CreateGraphClient(IServiceProvider c)
             {
                 var config = c.GetRequiredService<FunctionConfig>().ActiveDirectory;
+                bool isDevelopmentEnvironment = c.GetRequiredService<IHostEnvironment>().IsDevelopment();
                 IAuthenticationProvider provider;
 
                 if (isDevelopmentEnvironment)
