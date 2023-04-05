@@ -87,6 +87,6 @@ namespace Zhp.Office.AccountManagement.Adapters.ActiveDirectory
             return true;
         }
         
-        private string FirstCharToUpper(string text) => return text[0].ToString().ToUpper() + text.Substring(1).ToLower();
+        private string FirstCharToUpper(string text) => text[0].ToString().ToUpper() + text.Substring(1).ToLower();
     }
 }
