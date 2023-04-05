@@ -47,6 +47,9 @@ namespace Zhp.Office.AccountManagement.Adapters.ActiveDirectory
                 logger.LogInformation($"Sandbox graphAPI client: adding user {email}");
                 return true;
             }
+            
+            var firstName = FirstCharToUpper(request.FirstName.Trim());
+            var lastName = FirstCharToUpper(request.LastName.Trim());
 
             var user = new User
             {
@@ -59,10 +62,10 @@ namespace Zhp.Office.AccountManagement.Adapters.ActiveDirectory
                     ForceChangePasswordNextSignIn = true
                 },
 
-                GivenName = request.FirstName,
-                Surname = request.LastName,
-                DisplayName = $"{request.FirstName} {request.LastName}",
-                JobTitle = request.MembershipNumber,
+                GivenName = firstName,
+                Surname = lastName,
+                DisplayName = $"{firstName} {lastName}",
+                JobTitle = request.MembershipNumber.Trim(),
                 Department = request.FirstLevelUnit,
                 OfficeLocation = request.SecondLevelUnit,
 
@@ -83,5 +86,7 @@ namespace Zhp.Office.AccountManagement.Adapters.ActiveDirectory
             logger.LogDebug($"Adding user {email} finished.");
             return true;
         }
+        
+        private string FirstCharToUpper(string text) => return text[0].ToString().ToUpper() + text.Substring(1).ToLower();
     }
 }
