@@ -60,7 +60,7 @@ namespace Zhp.Office.AccountManagement.Domain.Services
             } while (tickets.Any());
         }
 
-        private (IReadOnlyCollection<ActivationRequest> valid, IReadOnlyCollection<ActivationRequest> duplicates) FindDuplicates(IReadOnlyCollection<ActivationRequest> tickets)
+        private static (IReadOnlyCollection<ActivationRequest> valid, IReadOnlyCollection<ActivationRequest> duplicates) FindDuplicates(IReadOnlyCollection<ActivationRequest> tickets)
         {
             var validTickets = tickets.GroupBy(t => t.MembershipNumber).Select(g => g.First()).ToList();
             var validTicketIds = validTickets.Select(t => t.Id).ToHashSet();

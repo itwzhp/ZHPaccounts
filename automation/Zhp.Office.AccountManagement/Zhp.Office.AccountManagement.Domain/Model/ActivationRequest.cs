@@ -1,4 +1,6 @@
-﻿namespace Zhp.Office.AccountManagement.Model
+using System.Text.RegularExpressions;
+
+namespace Zhp.Office.AccountManagement.Model
 {
     public class ActivationRequest
     {
@@ -17,5 +19,22 @@
         /// Full name - "Chorągiew Stołeczna" or "Główna Kwatera ZHP"
         /// </summary>
         public string SecondLevelUnit { get; set; } = string.Empty;
+
+        public void CleanUp()
+        {
+            FirstName = Clean(FirstName);
+            LastName = Clean(LastName);
+        }
+
+        private static string Clean(string input)
+        {
+            input = input.Trim();
+
+            input = Regex.Replace(input, @"\s{1,}", " ");
+
+            input = Regex.Replace(input, @"\w{1,}", m => m.Value[0..1].ToUpper() + m.Value[1..].ToLower());
+
+            return input;
+        }
     }
 }

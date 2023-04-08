@@ -35,7 +35,7 @@ namespace Zhp.Office.AccountManagement.Adapters.TicketSystem
         {
             // if we are in debug mode, don't return the same data on subsequent calls
             if (!enableChanges && wereSomeRequestsAlreadyReturned)
-                return new ActivationRequest[0];
+                return System.Array.Empty<ActivationRequest>();
 
             var results = (await jiraClient.Issues.GetIssuesFromJqlAsync(new IssueSearchOptions(jiraConfig.Queries.ApprovedActivationsTicket)
             {
