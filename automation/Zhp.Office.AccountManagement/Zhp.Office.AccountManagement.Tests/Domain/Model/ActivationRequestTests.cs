@@ -16,14 +16,12 @@ public class ActivationRequestTests
     [InlineData("øyvind", "Øyvind")]
     [InlineData("JEAN-BAPTISTE", "Jean-Baptiste")]
     [InlineData("von vordon", "Von Vordon")] // acceptable, but wrong
-    public void CleanUp_MapsProperlyCasing(string input, string expectedOutput)
+    public void MapsProperlyCasing(string input, string expectedOutput)
     {
         var subject = new ActivationRequest
         {
             FirstName = input
         };
-
-        subject.CleanUp();
 
         subject.FirstName.Should().Be(expectedOutput);
     }
@@ -32,20 +30,18 @@ public class ActivationRequestTests
     [InlineData("  Anna  ", "Anna")]
     [InlineData("\t\t  \n\rbożena\t\t\n\r  ", "Bożena")]
     [InlineData("  von    \t\n\r  vordon  ", "Von Vordon")]
-    public void CleanUp_TrimsWhitechars(string input, string expectedOutput)
+    public void TrimsWhitechars(string input, string expectedOutput)
     {
         var subject = new ActivationRequest
         {
             FirstName = input
         };
 
-        subject.CleanUp();
-
         subject.FirstName.Should().Be(expectedOutput);
     }
 
     [Fact]
-    public void CleanUp_CleansBothFirstAndLastName()
+    public void CleansBothFirstAndLastName()
     {
         var subject = new ActivationRequest
         {
@@ -53,9 +49,22 @@ public class ActivationRequestTests
             LastName = "kowalska"
         };
 
-        subject.CleanUp();
-
         subject.FirstName.Should().Be("Joanna");
         subject.LastName.Should().Be("Kowalska");
+    }
+
+    [Theory]
+    [InlineData("XY12344", "XY12344")]
+    [InlineData("XY-12344", "XY12344")]
+    [InlineData("xy123xy44", "XY123XY44")]
+    [InlineData("  xy 12344 ", "XY12344")]
+    public void CleansMembershipNumber(string input, string expectedOutput)
+    {
+        var subject = new ActivationRequest
+        {
+            MembershipNumber = input
+        };
+
+        subject.MembershipNumber.Should().Be(expectedOutput);
     }
 }

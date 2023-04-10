@@ -4,12 +4,14 @@ namespace Zhp.Office.AccountManagement.Model
 {
     public class ActivationRequest
     {
+        private string firstName = string.Empty;
+        private string lastName = string.Empty;
+        private string membershipNumber = string.Empty;
+
         public string Id { get; set; } = string.Empty;
-        public string FirstName { get; set; } = string.Empty;
-        public string LastName { get; set; } = string.Empty;
-
-        public string MembershipNumber { get; set; } = string.Empty;
-
+        public string FirstName { get => firstName; set => firstName = CleanName(value); }
+        public string LastName { get => lastName; set => lastName = CleanName(value); }
+        public string MembershipNumber { get => membershipNumber; set => membershipNumber = Regex.Replace(value, @"\W", string.Empty).ToUpper(); }
         /// <summary>
         /// Full name - "Hufiec Sopot", "Chorągiew Stołeczna" or "Główna Kwatera ZHP"
         /// </summary>
@@ -20,13 +22,7 @@ namespace Zhp.Office.AccountManagement.Model
         /// </summary>
         public string SecondLevelUnit { get; set; } = string.Empty;
 
-        public void CleanUp()
-        {
-            FirstName = Clean(FirstName);
-            LastName = Clean(LastName);
-        }
-
-        private static string Clean(string input)
+        private static string CleanName(string input)
         {
             input = input.Trim();
 
