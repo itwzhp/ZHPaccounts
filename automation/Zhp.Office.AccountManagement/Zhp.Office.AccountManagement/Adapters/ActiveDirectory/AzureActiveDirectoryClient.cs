@@ -34,7 +34,7 @@ namespace Zhp.Office.AccountManagement.Adapters.ActiveDirectory
 
             var existingUser = await client.Users.Request()
                 .Select(nameof(User.UserPrincipalName))
-                .Filter($"{nameof(User.UserPrincipalName)} eq '{email}'")
+                .Filter($"{nameof(User.UserPrincipalName)} eq '{email}' OR {nameof(User.ProxyAddresses)}/any(x:x eq 'smtp:{email}')")
                 .GetAsync(token);
 
             logger.LogDebug($"Found {existingUser.Count}.");
