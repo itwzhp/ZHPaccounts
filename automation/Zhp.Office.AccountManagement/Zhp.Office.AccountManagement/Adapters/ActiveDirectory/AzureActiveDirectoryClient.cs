@@ -70,7 +70,7 @@ namespace Zhp.Office.AccountManagement.Adapters.ActiveDirectory
                 UsageLocation = "PL",
 
                 EmployeeId = request.MembershipNumber,
-                EmployeeType = "Tipi",
+                EmployeeType = "Tipi-ticket",
             };
 
             var licenses = new[] { new AssignedLicense { SkuId = new Guid(activeDirectoryConfig.DefaultLicenseSku) } };
