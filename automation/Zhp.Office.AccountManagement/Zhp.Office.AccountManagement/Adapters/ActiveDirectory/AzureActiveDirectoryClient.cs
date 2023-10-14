@@ -68,6 +68,9 @@ namespace Zhp.Office.AccountManagement.Adapters.ActiveDirectory
 
                 AccountEnabled = true,
                 UsageLocation = "PL",
+
+                EmployeeId = request.MembershipNumber,
+                EmployeeType = "Tipi-automat-tmp",
             };
 
             var licenses = new[] { new AssignedLicense { SkuId = new Guid(activeDirectoryConfig.DefaultLicenseSku) } };
@@ -75,10 +78,10 @@ namespace Zhp.Office.AccountManagement.Adapters.ActiveDirectory
             token.ThrowIfCancellationRequested();
 
             logger.LogDebug($"Adding user {email}...");
-            user = await client.Users.Request().AddAsync(user);
+            user = await client.Users.Request().AddAsync(user, CancellationToken.None);
 
             logger.LogDebug($"Assigning license to user {email}...");
-            await client.Users[user.Id].AssignLicense(licenses, Enumerable.Empty<Guid>()).Request().PostAsync();
+            await client.Users[user.Id].AssignLicense(licenses, Enumerable.Empty<Guid>()).Request().PostAsync(CancellationToken.None);
 
             logger.LogDebug($"Adding user {email} finished.");
             return true;
