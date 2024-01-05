@@ -63,7 +63,7 @@ namespace Zhp.Office.AccountManagement.Adapters.ActiveDirectory
                 Surname = request.LastName,
                 DisplayName = $"{request.FirstName} {request.LastName}",
                 JobTitle = request.MembershipNumber,
-                Department = request.FirstLevelUnit,
+                Department = string.IsNullOrEmpty(request.FirstLevelUnit) ? request.SecondLevelUnit : request.FirstLevelUnit,
                 OfficeLocation = request.SecondLevelUnit,
 
                 AccountEnabled = true,
