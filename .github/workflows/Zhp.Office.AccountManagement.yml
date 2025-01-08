@@ -11,10 +11,10 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-dotnet@v1
+    - uses: actions/checkout@v4
+    - uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 8.0.x
 
     - name: Build
       run: dotnet build --configuration Release automation/Zhp.Office.AccountManagement
@@ -23,12 +23,12 @@ jobs:
       run: dotnet test --configuration Release automation/Zhp.Office.AccountManagement
 
     - name: Login to Azure
-      uses: azure/login@v1
+      uses: azure/login@v2
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Test ARM
-      uses: azure/arm-deploy@v1
+      uses: azure/arm-deploy@v2
       with:
         deploymentMode: Validate
         subscriptionId: 35e22786-93ea-47c8-902a-16e9d0f03e17
@@ -42,7 +42,7 @@ jobs:
         cp automation/Zhp.Office.AccountManagement/deployment.arm.json app/
 
     - name: Upload package
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: App
         path: app
@@ -54,17 +54,17 @@ jobs:
     needs: build
     steps:
     - name: Download package
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
         name: App
 
     - name: Login to Azure
-      uses: azure/login@v1
+      uses: azure/login@v2
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Deploy ARM
-      uses: azure/arm-deploy@v1
+      uses: azure/arm-deploy@v2
       with:
         deploymentMode: Complete
         subscriptionId: 35e22786-93ea-47c8-902a-16e9d0f03e17
