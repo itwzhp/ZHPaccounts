@@ -46,6 +46,7 @@ jobs:
       with:
         name: App
         path: app
+        include-hidden-files: true
 
   deploy:
     name: Deploy
