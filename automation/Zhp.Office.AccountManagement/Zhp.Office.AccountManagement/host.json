@@ -1,17 +1,18 @@
 {
-    "version": "2.0",
-    "logging": {
-        "applicationInsights": {
-            "samplingExcludedTypes": "Request",
-            "samplingSettings": {
-                "isEnabled": false
-            }
-        },
-        "logLevel": {
-            "Zhp.Office": "Debug",
-            "default": "Information",
-            "Microsoft.Graph": "Information"
-        }
+  "version": "2.0",
+  "logging": {
+    "applicationInsights": {
+      "samplingExcludedTypes": "Request",
+      "samplingSettings": {
+        "isEnabled": false,
+        "excludedTypes": "Request"
+      }
     },
-    "functionTimeout": "00:03:00"
+    "logLevel": {
+      "Zhp.Office": "Debug",
+      "default": "Information",
+      "Microsoft.Graph": "Information"
+    }
+  },
+  "functionTimeout": "00:03:00"
 }
